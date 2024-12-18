@@ -1,4 +1,4 @@
-﻿namespace Application.Calculation
+﻿namespace Application.Services.Calculation
 {
     public class CalculationService
     {
