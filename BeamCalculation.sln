@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeamCalculation.Client", "B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\Application.csproj", "{8B8223FF-DB99-4FCA-B703-8A0F66431441}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{7FCEDAE3-1310-49AB-8265-443F91A6AC08}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "Tests\UnitTests\UnitTests.csproj", "{0A66B7C2-1071-422D-91FF-2E48FFF25A1C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,8 +31,15 @@ Global
 		{8B8223FF-DB99-4FCA-B703-8A0F66431441}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B8223FF-DB99-4FCA-B703-8A0F66431441}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B8223FF-DB99-4FCA-B703-8A0F66431441}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A66B7C2-1071-422D-91FF-2E48FFF25A1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A66B7C2-1071-422D-91FF-2E48FFF25A1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A66B7C2-1071-422D-91FF-2E48FFF25A1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A66B7C2-1071-422D-91FF-2E48FFF25A1C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0A66B7C2-1071-422D-91FF-2E48FFF25A1C} = {7FCEDAE3-1310-49AB-8265-443F91A6AC08}
 	EndGlobalSection
 EndGlobal
