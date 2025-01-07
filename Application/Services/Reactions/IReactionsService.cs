@@ -2,6 +2,9 @@
 
 namespace Application.Services.Reactions
 {
+    /// <summary>
+    /// Service for calculating reactions at the supports of the beam.
+    /// </summary>
     public interface IReactionsService
     {
         /// <summary>

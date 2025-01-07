@@ -1,3 +1,8 @@
+using Application.Services.AssignForce;
+using Application.Services.Calculation;
+using Application.Services.CreateLoads;
+using Application.Services.CreatePoints;
+using Application.Services.Reactions;
 using BeamCalculation.Components;
 
 namespace BeamCalculation
@@ -11,6 +16,12 @@ namespace BeamCalculation
             // Add services to the container.
             builder.Services.AddRazorComponents()
                 .AddInteractiveWebAssemblyComponents();
+
+            builder.Services.AddScoped<IReactionsService, ReactionsService>();
+            builder.Services.AddScoped<ICreateLoadsService, CreateLoadsService>();
+            builder.Services.AddScoped<ICreatePointsService, CreatePointsService>();
+            builder.Services.AddScoped<IAssignForceService, AssignForceService>();
+            builder.Services.AddScoped<ICalculationService, CalculationService>();
 
             var app = builder.Build();
 

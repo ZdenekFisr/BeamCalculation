@@ -1,6 +1,10 @@
 ﻿@page "/counter"
 @rendermode InteractiveWebAssembly
 
+@using Application.Services.Reactions
+
+@inject IReactionsService ReactionsService
+
 <PageTitle>Counter</PageTitle>
 
 <h1>Counter</h1>

@@ -1,8 +1,11 @@
-﻿using Application.SegmentComponents;
+﻿using Application.PointComponents;
 
 namespace Application
 {
-    public class Segment : IForce
+    /// <summary>
+    /// Represents a point on the beam. Each point has a position, shear force, bending moment, modulus, and mechanical stress.
+    /// </summary>
+    public class Point : IForce
     {
         public double Position { get; set; }
         public double Force { get; set; }

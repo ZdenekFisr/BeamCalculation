@@ -1,18 +1,38 @@
-﻿using Application.Enums;
-
-namespace Application.Input
+﻿namespace Application.Input
 {
     /// <summary>
-    /// Represents a load on the beam.
+    /// Represents a general load on the beam.
     /// </summary>
-    public class Load
+    public abstract class Load
     {
-        public double Value { get; set; }
+        /// <summary>
+        /// General value of the load.
+        /// </summary>
+        public virtual double Value { get; set; }
 
-        public LoadType Type { get; set; }
-
+        /// <summary>
+        /// The position of the load from the left edge of the beam in meters.
+        /// </summary>
         public double Position { get; set; }
 
-        public double Length { get; set; }
+        /// <summary>
+        /// Returns the influence of the load on the shear force at a given position.
+        /// </summary>
+        /// <param name="position">Position on the beam in meters.</param>
+        /// <returns>Influence on the shear force in N.</returns>
+        public abstract double GetInfluenceOnShearForce(double position);
+
+        /// <summary>
+        /// Returns the influence of the load on the bending moment at a given position.
+        /// </summary>
+        /// <param name="position">Position on the beam in meters.</param>
+        /// <returns>Influence on the bending moment in Nm.</returns>
+        public abstract double GetInfluenceOnBendingMoment(double position);
+
+        /// <summary>
+        /// Returns a simplified version of the load.
+        /// </summary>
+        /// <returns>A collection of loads that represent this load in simplified terms.</returns>
+        public abstract ICollection<Load> GetSimplifiedLoads();
     }
 }

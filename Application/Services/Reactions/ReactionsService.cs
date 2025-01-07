@@ -3,6 +3,7 @@ using Application.Input;
 
 namespace Application.Services.Reactions
 {
+    /// <inheritdoc cref="IReactionsService"/>
     public class ReactionsService : IReactionsService
     {
         /// <inheritdoc />
@@ -12,61 +13,26 @@ namespace Application.Services.Reactions
 
             foreach (Load load in beam.Loads)
             {
-                switch (load.Type)
-                {
-                    case LoadType.Force:
-                    case LoadType.Moment:
-                        loads.Add(load);
-                        break;
-
-                    case LoadType.ContinuousLoadConstant:
-                        loads.Add(new()
-                        {
-                            Value = load.Value * load.Length,
-                            Type = LoadType.Force,
-                            Position = load.Position + load.Length / 2
-                        });
-                        break;
-
-                    case LoadType.ContinuousLoadRising:
-                        loads.Add(new()
-                        {
-                            Value = load.Value * load.Length / 2,
-                            Type = LoadType.Force,
-                            Position = load.Position + 2 * load.Length / 3
-                        });
-                        break;
-
-                    case LoadType.ContinuousLoadFalling:
-                        loads.Add(new()
-                        {
-                            Value = load.Value * load.Length / 2,
-                            Type = LoadType.Force,
-                            Position = load.Position + load.Length / 3
-                        });
-                        break;
-                }
+                loads.AddRange(load.GetSimplifiedLoads());
             }
 
             double reactionMA = 0, reactionAY = 0, reactionBY;
             switch (beam.Type)
             {
                 case BeamType.OneSupport:
-                    reactionMA = loads.Where(l => l.Type == LoadType.Moment).Sum(l => -l.Value) + loads.Where(l => l.Type == LoadType.Force).Sum(l => -l.Value * l.Position);
-                    reactionAY = loads.Where(l => l.Type == LoadType.Force).Sum(l => -l.Value);
+                    reactionMA = loads.Where(l => l is MomentLoad).Sum(l => -l.Value) + loads.Where(l => l is ForceLoad).Sum(l => -l.Value * l.Position);
+                    reactionAY = loads.Where(l => l is ForceLoad).Sum(l => -l.Value);
                     return (reactionAY, reactionMA);
 
                 case BeamType.TwoSupports:
-                    reactionMA = loads.Where(l => l.Type == LoadType.Moment).Sum(l => -l.Value) + loads.Where(l => l.Type == LoadType.Force).Sum(l => -l.Value * (l.Position - beam.OverlapA));
+                    reactionMA = loads.Where(l => l is MomentLoad).Sum(l => -l.Value) + loads.Where(l => l is ForceLoad).Sum(l => -l.Value * (l.Position - beam.OverlapA));
                     reactionBY = reactionMA / beam.Length;
-                    loads.Add(new()
+                    loads.Add(new ForceLoad
                     {
                         Value = reactionBY,
-                        Type = LoadType.Force,
-                        Position = beam.Length + beam.OverlapA,
-                        Length = 0
+                        Position = beam.Length + beam.OverlapA
                     });
-                    reactionAY = loads.Where(l => l.Type == LoadType.Force).Sum(l => -l.Value);
+                    reactionAY = loads.Where(l => l is ForceLoad).Sum(l => -l.Value);
                     return (reactionAY, reactionBY);
 
                 default:
