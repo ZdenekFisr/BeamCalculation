@@ -5,7 +5,7 @@ namespace Application
     /// <summary>
     /// Represents a point on the beam. Each point has a position, shear force, bending moment, modulus, and mechanical stress.
     /// </summary>
-    public class Point : IForce
+    public class Point : IForce, IMoment
     {
         public double Position { get; set; }
         public double Force { get; set; }

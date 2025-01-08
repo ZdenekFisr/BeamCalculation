@@ -1,16 +1,19 @@
 ﻿using Application.Input;
 using Application.Services.AssignForce;
+using Application.Services.AssignMoment;
 using Application.Services.CreatePoints;
 
 namespace Application.Services.Calculation
 {
     public class CalculationService(
         ICreatePointsService createPointsService,
-        IAssignForceService assignForceService)
+        IAssignForceService assignForceService,
+        IAssignMomentService assignMomentService)
         : ICalculationService
     {
         private readonly ICreatePointsService _createPointsService = createPointsService;
         private readonly IAssignForceService _assignForceService = assignForceService;
+        private readonly IAssignMomentService _assignMomentService = assignMomentService;
 
         public void Calculate(Beam beam, double lengthBetweenPoints)
         {
@@ -19,6 +22,7 @@ namespace Application.Services.Calculation
 
             Point[] points = _createPointsService.CreatePoints(beam.Length, lengthBetweenPoints);
             _assignForceService.AssignForce(points, totalLoads);
+            _assignMomentService.AssignMoment(points, totalLoads);
         }
     }
 }

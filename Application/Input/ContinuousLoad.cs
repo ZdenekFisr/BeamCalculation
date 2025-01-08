@@ -25,21 +25,52 @@
         /// </summary>
         public double EndCoefficient { get; set; }
 
-        public override double GetInfluenceOnShearForce(double position)
+        public override double GetInfluenceOnShearForce(double currentPointPosition)
         {
-            if (position <= Position)
+            if (currentPointPosition <= Position)
                 return 0;
 
-            if (Position + Length <= position)
+            if (currentPointPosition <= Position + Length)
                 return Value * (EndCoefficient + StartCoefficient) / 2;
 
-            double coefficient = StartCoefficient + (EndCoefficient - StartCoefficient) * (position - Position) / Length;
-            return Value * (StartCoefficient + coefficient) / 2 * (position - Position) / Length;
+            return GetForceAtPosition(currentPointPosition);
         }
 
-        public override double GetInfluenceOnBendingMoment(double position)
+        public override double GetInfluenceOnBendingMoment(double currentPointPosition)
         {
-            throw new NotImplementedException();
+            if (currentPointPosition <= Position)
+                return 0;
+
+            if (currentPointPosition <= Position + Length)
+            {
+                double coefficient = GetCurrentCoefficient(currentPointPosition);
+
+                Load partialLoad = new ContinuousLoad
+                {
+                    Value = Value,
+                    Position = Position,
+                    Length = currentPointPosition - Position,
+                    StartCoefficient = StartCoefficient,
+                    EndCoefficient = coefficient
+                };
+
+                Load[] partialLoadsSimplified = [.. partialLoad.GetSimplifiedLoads()];
+                return partialLoadsSimplified.Sum(load => load.Value * load.Position);
+            }
+
+            Load[] loadsSimplified = [.. GetSimplifiedLoads()];
+            return loadsSimplified.Sum(load => load.Value * load.Position);
+        }
+
+        private double GetCurrentCoefficient(double position)
+        {
+            return StartCoefficient + (EndCoefficient - StartCoefficient) * (position - Position) / Length;
+        }
+
+        private double GetForceAtPosition(double position)
+        {
+            double coefficient = GetCurrentCoefficient(position);
+            return Value * (StartCoefficient + coefficient) / 2 * (position - Position) / Length;
         }
 
         public override ICollection<Load> GetSimplifiedLoads()
