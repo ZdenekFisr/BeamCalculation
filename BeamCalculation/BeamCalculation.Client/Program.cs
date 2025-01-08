@@ -1,4 +1,6 @@
-using Application.Services.Reactions;
+using Application.Services.AssignForce;
+using Application.Services.Calculation;
+using Application.Services.CreatePoints;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 namespace BeamCalculation.Client
@@ -9,7 +11,9 @@ namespace BeamCalculation.Client
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-            builder.Services.AddScoped<IReactionsService, ReactionsService>();
+            builder.Services.AddScoped<ICreatePointsService, CreatePointsService>();
+            builder.Services.AddScoped<IAssignForceService, AssignForceService>();
+            builder.Services.AddScoped<ICalculationService, CalculationService>();
 
             await builder.Build().RunAsync();
         }

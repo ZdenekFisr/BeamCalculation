@@ -1,24 +1,24 @@
 ﻿using Application.Input;
-using Application.Services.CreateLoads;
+using Application.Services.AssignForce;
 using Application.Services.CreatePoints;
-using Application.Services.Reactions;
 
 namespace Application.Services.Calculation
 {
     public class CalculationService(
-        IReactionsService reactionsService,
-        ICreateLoadsService createLoadsService,
-        ICreatePointsService createPointsService) : ICalculationService
+        ICreatePointsService createPointsService,
+        IAssignForceService assignForceService)
+        : ICalculationService
     {
-        private readonly IReactionsService _reactionsService = reactionsService;
-        private readonly ICreateLoadsService _createLoadsService = createLoadsService;
         private readonly ICreatePointsService _createPointsService = createPointsService;
+        private readonly IAssignForceService _assignForceService = assignForceService;
 
         public void Calculate(Beam beam, double lengthBetweenPoints)
         {
-            (double reaction1, double reaction2) = _reactionsService.CalculateReactions(beam);
-            Load[] loads = _createLoadsService.CreateLoads(beam.Loads, reaction1, reaction2, beam.TotalLength, beam.OverlapA);
-            Point[] points = _createPointsService.CreatePoints(beam.TotalLength, lengthBetweenPoints);
+            Load[] reactions = [.. beam.GetReactions()];
+            Load[] totalLoads = [.. beam.Loads, .. reactions];
+
+            Point[] points = _createPointsService.CreatePoints(beam.Length, lengthBetweenPoints);
+            _assignForceService.AssignForce(points, totalLoads);
         }
     }
 }

@@ -1,34 +1,31 @@
-﻿using Application.Enums;
-using Application.Input;
-using Application.Services.Reactions;
+﻿using Application.Input;
 using FluentAssertions;
 
 namespace UnitTests
 {
-    public class ReactionsServiceTests
+    public class GetReactionsTests
     {
-        private readonly ReactionsService _reactionsService;
-
-        public ReactionsServiceTests()
+        private void PerformTestForOneSupport(ICollection<Load> loads, double expectedReactionMA, double expectedReactionAY)
         {
-            _reactionsService = new();
-        }
+            const double supportA = 0;
 
-        private void PerformTestForOneSupport(ICollection<Load> loads, double expectedReaction1, double expectedReaction2)
-        {
-            Beam beam = new()
+            OneSupportBeam beam = new()
             {
-                Type = BeamType.OneSupport,
                 Length = 1,
+                SupportA = supportA,
                 Loads = loads,
                 Moduli = []
             };
 
-            (double reaction1, double reaction2) actual = _reactionsService.CalculateReactions(beam);
-            actual.reaction1 = Math.Round(actual.reaction1, 4);
-            actual.reaction2 = Math.Round(actual.reaction2, 4);
+            Load[] expected =
+            [
+                new MomentLoad { Value = expectedReactionMA, Position = supportA },
+                new ForceLoad { Value = expectedReactionAY, Position = supportA }
+            ];
+            Load[] actual = [.. beam.GetReactions()];
 
-            actual.Should().Be((expectedReaction1, expectedReaction2));
+            actual.Should().BeEquivalentTo(expected, options => options
+                .Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 1e-6)).WhenTypeIs<double>());
         }
 
         [Fact]
@@ -92,9 +89,9 @@ namespace UnitTests
         {
             List<Load> loads =
             [
-                new ForceLoad { Value = -2000, Position = 0 }, // 2000, 0
-                new ForceLoad { Value = -2000, Position = 1 }, // 4000, 2000
-                new MomentLoad { Value = 3000, Position = 0.5 }, // 4000, -1000
+                new ForceLoad { Value = -2000, Position = 0 },
+                new ForceLoad { Value = -2000, Position = 1 },
+                new MomentLoad { Value = 3000, Position = 0.5 },
                 new ContinuousLoad { Value = -500, Position = 0, Length = 1, StartCoefficient = 1, EndCoefficient = 1 }, // 4500, -750
                 new ContinuousLoad { Value = -1000, Position = 0.7, Length = 0.3, StartCoefficient = 0, EndCoefficient = 1 }, // 4650, -615
                 new ContinuousLoad { Value = -1000, Position = 0, Length = 0.3, StartCoefficient = 1, EndCoefficient = 0 } // 4800, -600
@@ -102,23 +99,29 @@ namespace UnitTests
             PerformTestForOneSupport(loads, 4800, -600);
         }
 
-        private void PerformTestForTwoSupports(ICollection<Load> loads, double expectedReaction1, double expectedReaction2)
+        private void PerformTestForTwoSupports(ICollection<Load> loads, double expectedReactionAY, double expectedReactionBY)
         {
-            Beam beam = new()
+            const double supportA = 0.1;
+            const double supportB = 1.1;
+
+            TwoSupportsBeam beam = new()
             {
-                Type = BeamType.TwoSupports,
-                Length = 1,
-                OverlapA = 0.1,
-                OverlapB = 0.1,
+                Length = 1.2,
+                SupportA = supportA,
+                SupportB = supportB,
                 Loads = loads,
                 Moduli = []
             };
 
-            (double reaction1, double reaction2) actual = _reactionsService.CalculateReactions(beam);
-            actual.reaction1 = Math.Round(actual.reaction1, 4);
-            actual.reaction2 = Math.Round(actual.reaction2, 4);
+            Load[] expected =
+            [
+                new ForceLoad { Value = expectedReactionAY, Position = supportA },
+                new ForceLoad { Value = expectedReactionBY, Position = supportB }
+            ];
+            Load[] actual = [.. beam.GetReactions()];
 
-            actual.Should().Be((expectedReaction1, expectedReaction2));
+            actual.Should().BeEquivalentTo(expected, options => options
+                .Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 1e-6)).WhenTypeIs<double>());
         }
 
         [Fact]
