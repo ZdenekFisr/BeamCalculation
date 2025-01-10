@@ -1,0 +1,327 @@
+﻿<RadzenText TextStyle="TextStyle.H4">Beam calculation</RadzenText>
+
+<RadzenStack Orientation="Orientation.Vertical">
+    <RadzenFieldset Text="Beam">
+        <RadzenRow>
+            <RadzenColumn Size="3">
+                <RadzenRadioButtonList TValue="int" @bind-Value=beamType Orientation="Orientation.Vertical">
+                    <Items>
+                        <RadzenRadioButtonListItem Value="1" Text="One support"></RadzenRadioButtonListItem>
+                        <RadzenRadioButtonListItem Value="2" Text="Two supports"></RadzenRadioButtonListItem>
+                    </Items>
+                </RadzenRadioButtonList>
+                <RadzenFormField Text="Length of part A [m]">
+                    <RadzenNumeric TValue="double" @bind-Value=lengthA Min="0" Max="1000" Step="0.1" />
+                </RadzenFormField>
+                <RadzenFormField Text="Length of part B [m]">
+                    <RadzenNumeric TValue="double" @bind-Value=lengthB Min="0" Max="1000" Step="0.1" />
+                </RadzenFormField>
+                <RadzenFormField Text="Length of part C [m]">
+                    <RadzenNumeric TValue="double" @bind-Value=lengthC Min="0" Max="1000" Step="0.1" />
+                </RadzenFormField>
+            </RadzenColumn>
+
+            <RadzenColumn Size="9">
+                <RadzenStack Orientation="Orientation.Horizontal">
+                    <RadzenText TextStyle="TextStyle.H6">Moduli</RadzenText>
+                    <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text="Add" Click="InsertModulus" />
+                </RadzenStack>
+                <RadzenDataGrid @ref=moduliGrid TItem="Modulus" Data=@moduli
+                                RowCreate="OnCreateModulus" RowUpdate="OnUpdateModulus"
+                                EmptyText="No moduli yet. This list must contain a modulus with the property 'From' at 0 m.">
+                    <Columns>
+                        <RadzenDataGridColumn Property="From" Title="From [m]" Sortable="false">
+                            <EditTemplate>
+                                <RadzenNumeric @bind-Value="context.From" Min="0" Step="0.1" />
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn Property="Value" Title="Value [mm^3]">
+                            <EditTemplate>
+                                <RadzenNumeric @bind-Value="context.Value" Min="0" Step="10" />
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn Context="modulus" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Frozen="true" FrozenPosition="FrozenColumnPosition.Right">
+                            <Template>
+                                <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@(args => EditModulus(modulus))" @onclick:stopPropagation="true" />
+                                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => DeleteModulus(modulus))" @onclick:stopPropagation="true" />
+                            </Template>
+                            <EditTemplate>
+                                <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@((args) => SaveModulus(modulus))" aria-label="Save" />
+                                <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@((args) => CancelEditModulus(modulus))" aria-label="Cancel" />
+                                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => DeleteModulus(modulus))" aria-label="Delete" />
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+            </RadzenColumn>
+        </RadzenRow>
+    </RadzenFieldset>
+
+    <RadzenFieldset Text="Loads">
+        <RadzenRow>
+            <RadzenColumn Size="3">
+                <RadzenStack Orientation="Orientation.Horizontal">
+                    <RadzenText TextStyle="TextStyle.H6">Force loads</RadzenText>
+                    <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text="Add" Click="InsertLoad<ForceLoad>" />
+                </RadzenStack>
+                <RadzenDataGrid @ref=forceLoadsGrid TItem="ForceLoad" Data=@forceLoads
+                                RowCreate="OnCreateLoad" RowUpdate="OnUpdateLoad"
+                                EmptyText="No force loads yet.">
+                    <Columns>
+                        <RadzenDataGridColumn Property="Position" Title="Position [m]" Sortable="false">
+                            <EditTemplate>
+                                <RadzenNumeric @bind-Value="context.Position" Min="0" Step="0.1" />
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn Property="Value" Title="Value [N]">
+                            <EditTemplate>
+                                <RadzenNumeric @bind-Value="context.Value" Min="0" Step="10" />
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn Context="load" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Frozen="true" FrozenPosition="FrozenColumnPosition.Right">
+                            <Template>
+                                <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@(args => EditLoad(load))" @onclick:stopPropagation="true" />
+                                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => DeleteLoad(load))" @onclick:stopPropagation="true" />
+                            </Template>
+                            <EditTemplate>
+                                <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@((args) => SaveLoad(load))" aria-label="Save" />
+                                <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@((args) => CancelEditLoad(load))" aria-label="Cancel" />
+                                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => DeleteLoad(load))" aria-label="Delete" />
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+            </RadzenColumn>
+
+            <RadzenColumn Size="3">
+                <RadzenStack Orientation="Orientation.Horizontal">
+                    <RadzenText TextStyle="TextStyle.H6">Moment loads</RadzenText>
+                    <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text="Add" Click="InsertLoad<MomentLoad>" />
+                </RadzenStack>
+                <RadzenDataGrid @ref=momentLoadsGrid TItem="MomentLoad" Data=@momentLoads
+                                RowCreate="OnCreateLoad" RowUpdate="OnUpdateLoad"
+                                EmptyText="No moment loads yet.">
+                    <Columns>
+                        <RadzenDataGridColumn Property="Position" Title="Position [m]" Sortable="false">
+                            <EditTemplate>
+                                <RadzenNumeric @bind-Value="context.Position" Min="0" Step="0.1" />
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn Property="Value" Title="Value [Nm]">
+                            <EditTemplate>
+                                <RadzenNumeric @bind-Value="context.Value" Min="0" Step="10" />
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn Context="load" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Frozen="true" FrozenPosition="FrozenColumnPosition.Right">
+                            <Template>
+                                <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@(args => EditLoad(load))" @onclick:stopPropagation="true" />
+                                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => DeleteLoad(load))" @onclick:stopPropagation="true" />
+                            </Template>
+                            <EditTemplate>
+                                <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@((args) => SaveLoad(load))" aria-label="Save" />
+                                <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@((args) => CancelEditLoad(load))" aria-label="Cancel" />
+                                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => DeleteLoad(load))" aria-label="Delete" />
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+            </RadzenColumn>
+
+            <RadzenColumn Size="6">
+                <RadzenStack Orientation="Orientation.Horizontal">
+                    <RadzenText TextStyle="TextStyle.H6">Continuous loads</RadzenText>
+                    <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text="Add" Click="InsertLoad<ContinuousLoad>" />
+                </RadzenStack>
+                <RadzenDataGrid @ref=continuousLoadsGrid TItem="ContinuousLoad" Data=@continuousLoads
+                                RowCreate="OnCreateLoad" RowUpdate="OnUpdateLoad"
+                                EmptyText="No continuous loads yet.">
+                    <Columns>
+                        <RadzenDataGridColumn Property="Position" Title="Position [m]" Sortable="false">
+                            <EditTemplate>
+                                <RadzenNumeric @bind-Value="context.Position" Min="0" Step="0.1" />
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn Property="Value" Title="Nom. value [N/m]">
+                            <EditTemplate>
+                                <RadzenNumeric @bind-Value="context.Value" Min="0" Step="10" />
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn Property="Length" Title="Length [m]">
+                            <EditTemplate>
+                                <RadzenNumeric @bind-Value="context.Length" Min="0" Step="10" />
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn Property="StartCoefficient" Title="Start coef. [1]">
+                            <EditTemplate>
+                                <RadzenNumeric @bind-Value="context.StartCoefficient" Min="0" Step="10" />
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn Property="EndCoefficient" Title="End coef. [1]">
+                            <EditTemplate>
+                                <RadzenNumeric @bind-Value="context.EndCoefficient" Min="0" Step="10" />
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn Context="load" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Frozen="true" FrozenPosition="FrozenColumnPosition.Right">
+                            <Template>
+                                <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@(args => EditLoad(load))" @onclick:stopPropagation="true" />
+                                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => DeleteLoad(load))" @onclick:stopPropagation="true" />
+                            </Template>
+                            <EditTemplate>
+                                <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@((args) => SaveLoad(load))" aria-label="Save" />
+                                <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@((args) => CancelEditLoad(load))" aria-label="Cancel" />
+                                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => DeleteLoad(load))" aria-label="Delete" />
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+            </RadzenColumn>
+        </RadzenRow>
+    </RadzenFieldset>
+</RadzenStack>
+
+@code {
+    #region Beam
+
+    int beamType = 1;
+    double lengthA = 0;
+    double lengthB = 0;
+    double lengthC = 0;
+
+    List<Modulus> moduli = [];
+
+    private RadzenDataGrid<Modulus> moduliGrid;
+
+    private void OnCreateModulus(Modulus modulus)
+    {
+        moduli.Add(modulus);
+    }
+
+    private void OnUpdateModulus(Modulus modulus)
+    {
+        moduli.Remove(modulus);
+        moduli.Add(modulus);
+    }
+
+    private async Task InsertModulus()
+    {
+        Modulus modulus = new();
+        await moduliGrid.InsertRow(modulus);
+    }
+
+    private async Task EditModulus(Modulus modulus)
+    {
+        await moduliGrid.EditRow(modulus);
+    }
+
+    private async Task SaveModulus(Modulus modulus)
+    {
+        await moduliGrid.UpdateRow(modulus);
+        moduli = moduli.OrderBy(m => m.From).ToList();
+    }
+
+    private void CancelEditModulus(Modulus modulus)
+    {
+        moduliGrid.CancelEditRow(modulus);
+    }
+
+    private async Task DeleteModulus(Modulus modulus)
+    {
+        moduli.Remove(modulus);
+        await moduliGrid.Reload();
+    }
+
+    #endregion
+
+    #region Loads
+
+    List<ForceLoad> forceLoads = [];
+    List<MomentLoad> momentLoads = [];
+    List<ContinuousLoad> continuousLoads = [];
+
+    private RadzenDataGrid<ForceLoad> forceLoadsGrid;
+    private RadzenDataGrid<MomentLoad> momentLoadsGrid;
+    private RadzenDataGrid<ContinuousLoad> continuousLoadsGrid;
+
+    private List<T> SelectLoadList<T>() where T : Load
+    {
+        if (typeof(T) == typeof(ForceLoad))
+            return forceLoads as List<T> ?? throw new InvalidOperationException("forceLoads is null");
+
+        else if (typeof(T) == typeof(MomentLoad))
+            return momentLoads as List<T> ?? throw new InvalidOperationException("forceLoads is null");
+
+        else if (typeof(T) == typeof(ContinuousLoad))
+            return continuousLoads as List<T> ?? throw new InvalidOperationException("forceLoads is null");
+
+        else
+            throw new InvalidOperationException("Unsupported load type");
+    }
+
+    private void OrderLoadList<T>() where T : Load
+    {
+        if (typeof(T) == typeof(ForceLoad))
+            forceLoads = forceLoads.OrderBy(l => l.Position).ToList();
+
+        else if (typeof(T) == typeof(MomentLoad))
+            momentLoads = momentLoads.OrderBy(l => l.Position).ToList();
+
+        else if (typeof(T) == typeof(ContinuousLoad))
+            continuousLoads = continuousLoads.OrderBy(l => l.Position).ToList();
+    }
+
+    private RadzenDataGrid<T> SelectLoadGrid<T>() where T : Load
+    {
+        if (typeof(T) == typeof(ForceLoad))
+            return forceLoadsGrid as RadzenDataGrid<T> ?? throw new InvalidOperationException("forceLoadsGrid is null");
+
+        else if (typeof(T) == typeof(MomentLoad))
+            return momentLoadsGrid as RadzenDataGrid<T> ?? throw new InvalidOperationException("momentLoadsGrid is null");
+
+        else if (typeof(T) == typeof(ContinuousLoad))
+            return continuousLoadsGrid as RadzenDataGrid<T> ?? throw new InvalidOperationException("continuousLoadsGrid is null");
+
+        else
+            throw new InvalidOperationException("Unsupported load type");
+    }
+
+    private void OnCreateLoad<T>(T load) where T : Load
+    {
+        SelectLoadList<T>()?.Add(load);
+    }
+
+    private void OnUpdateLoad<T>(T load) where T : Load
+    {
+        SelectLoadList<T>()?.Remove(load);
+        SelectLoadList<T>()?.Add(load);
+    }
+
+    private async Task InsertLoad<T>() where T : Load, new()
+    {
+        T load = new();
+        await SelectLoadGrid<T>().InsertRow(load);
+    }
+
+    private async Task EditLoad<T>(T load) where T : Load
+    {
+        await SelectLoadGrid<T>().EditRow(load);
+    }
+
+    private async Task SaveLoad<T>(T load) where T : Load
+    {
+        await SelectLoadGrid<T>().UpdateRow(load);
+        OrderLoadList<T>();
+    }
+
+    private void CancelEditLoad<T>(T load) where T : Load
+    {
+        SelectLoadGrid<T>().CancelEditRow(load);
+    }
+
+    private async Task DeleteLoad<T>(T load) where T : Load
+    {
+        SelectLoadList<T>()?.Remove(load);
+        await SelectLoadGrid<T>().Reload();
+    }
+
+    #endregion
+}

@@ -1,4 +1,5 @@
 using BeamCalculation.Components;
+using Radzen;
 
 namespace BeamCalculation
 {
@@ -11,6 +12,8 @@ namespace BeamCalculation
             // Add services to the container.
             builder.Services.AddRazorComponents()
                 .AddInteractiveWebAssemblyComponents();
+
+            builder.Services.AddRadzenComponents();
 
             var app = builder.Build();
 

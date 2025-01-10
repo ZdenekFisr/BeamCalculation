@@ -3,6 +3,7 @@ using Application.Services.AssignMoment;
 using Application.Services.Calculation;
 using Application.Services.CreatePoints;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Radzen;
 
 namespace BeamCalculation.Client
 {
@@ -11,6 +12,8 @@ namespace BeamCalculation.Client
         private static async Task Main(string[] args)
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
+
+            builder.Services.AddRadzenComponents();
 
             builder.Services.AddScoped<ICreatePointsService, CreatePointsService>();
             builder.Services.AddScoped<IAssignForceService, AssignForceService>();
