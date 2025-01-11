@@ -1,13 +1,16 @@
-﻿<RadzenText TextStyle="TextStyle.H4">Beam calculation</RadzenText>
+﻿@inject ICalculationService CalculationService
+@inject IPointTransformationService PointTransformationService
+
+<RadzenText TextStyle="TextStyle.H4">Beam calculation</RadzenText>
 
 <RadzenStack Orientation="Orientation.Vertical">
     <RadzenFieldset Text="Beam">
         <RadzenRow>
             <RadzenColumn Size="3">
-                <RadzenRadioButtonList TValue="int" @bind-Value=beamType Orientation="Orientation.Vertical">
+                <RadzenRadioButtonList TValue="BeamType" @bind-Value=beamType Orientation="Orientation.Vertical">
                     <Items>
-                        <RadzenRadioButtonListItem Value="1" Text="One support"></RadzenRadioButtonListItem>
-                        <RadzenRadioButtonListItem Value="2" Text="Two supports"></RadzenRadioButtonListItem>
+                        <RadzenRadioButtonListItem Value="BeamType.OneSupport" Text="One support"></RadzenRadioButtonListItem>
+                        <RadzenRadioButtonListItem Value="BeamType.TwoSupports" Text="Two supports"></RadzenRadioButtonListItem>
                     </Items>
                 </RadzenRadioButtonList>
                 <RadzenFormField Text="Length of part A [m]">
@@ -27,8 +30,8 @@
                     <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text="Add" Click="InsertModulus" />
                 </RadzenStack>
                 <RadzenDataGrid @ref=moduliGrid TItem="Modulus" Data=@moduli
-                                RowCreate="OnCreateModulus" RowUpdate="OnUpdateModulus"
-                                EmptyText="No moduli yet. This list must contain a modulus with the property 'From' at 0 m.">
+                RowCreate="OnCreateModulus" RowUpdate="OnUpdateModulus"
+                EmptyText="No moduli yet. This list must contain a modulus with the property 'From' at 0 m.">
                     <Columns>
                         <RadzenDataGridColumn Property="From" Title="From [m]" Sortable="false">
                             <EditTemplate>
@@ -65,8 +68,8 @@
                     <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text="Add" Click="InsertLoad<ForceLoad>" />
                 </RadzenStack>
                 <RadzenDataGrid @ref=forceLoadsGrid TItem="ForceLoad" Data=@forceLoads
-                                RowCreate="OnCreateLoad" RowUpdate="OnUpdateLoad"
-                                EmptyText="No force loads yet.">
+                RowCreate="OnCreateLoad" RowUpdate="OnUpdateLoad"
+                EmptyText="No force loads yet.">
                     <Columns>
                         <RadzenDataGridColumn Property="Position" Title="Position [m]" Sortable="false">
                             <EditTemplate>
@@ -99,8 +102,8 @@
                     <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text="Add" Click="InsertLoad<MomentLoad>" />
                 </RadzenStack>
                 <RadzenDataGrid @ref=momentLoadsGrid TItem="MomentLoad" Data=@momentLoads
-                                RowCreate="OnCreateLoad" RowUpdate="OnUpdateLoad"
-                                EmptyText="No moment loads yet.">
+                RowCreate="OnCreateLoad" RowUpdate="OnUpdateLoad"
+                EmptyText="No moment loads yet.">
                     <Columns>
                         <RadzenDataGridColumn Property="Position" Title="Position [m]" Sortable="false">
                             <EditTemplate>
@@ -133,8 +136,8 @@
                     <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text="Add" Click="InsertLoad<ContinuousLoad>" />
                 </RadzenStack>
                 <RadzenDataGrid @ref=continuousLoadsGrid TItem="ContinuousLoad" Data=@continuousLoads
-                                RowCreate="OnCreateLoad" RowUpdate="OnUpdateLoad"
-                                EmptyText="No continuous loads yet.">
+                RowCreate="OnCreateLoad" RowUpdate="OnUpdateLoad"
+                EmptyText="No continuous loads yet.">
                     <Columns>
                         <RadzenDataGridColumn Property="Position" Title="Position [m]" Sortable="false">
                             <EditTemplate>
@@ -177,17 +180,38 @@
             </RadzenColumn>
         </RadzenRow>
     </RadzenFieldset>
+
+    <RadzenButton ButtonStyle="ButtonStyle.Success" Text="Calculate" Click="Calculate" />
+    @if (success)
+    {
+        <RadzenStack Orientation="Orientation.Horizontal" Gap="20">
+            <RadzenLabel Text="Reactions:" />
+            <ResultText Text=@reaction1Text />
+            <ResultText Text=@reaction2Text />
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" Gap="20">
+            <RadzenLabel Text="Max. force:" />
+            <ResultText Text=@maxForceText />
+            <RadzenLabel Text="Max. moment:" />
+            <ResultText Text=@maxMomentText />
+            <RadzenLabel Text="Max. stress:" />
+            <ResultText Text=@maxStressText />
+        </RadzenStack>
+        <ResultChart Data=@PointTransformationService.TransformPoints(output.Points, p => p.Force, p => p.ForceJump) ValueAxisTitle="Force [N]" MinValue=@minForce MaxValue=@maxForce LineColor="Blue" />
+        <ResultChart Data=@PointTransformationService.TransformPoints(output.Points, p => p.Moment, p => p.MomentJump) ValueAxisTitle="Moment [Nm]" MinValue=@minMoment MaxValue=@maxMoment LineColor="Green" />
+        <ResultChart Data=@PointTransformationService.TransformPoints(output.Points, p => p.Stress, p => p.StressJump) ValueAxisTitle="Stress [MPa]" MinValue=@minStress MaxValue=@maxStress LineColor="Red" />
+    }
 </RadzenStack>
 
 @code {
     #region Beam
 
-    int beamType = 1;
+    BeamType beamType = BeamType.OneSupport;
     double lengthA = 0;
-    double lengthB = 0;
+    double lengthB = 0.2;
     double lengthC = 0;
 
-    List<Modulus> moduli = [];
+    List<Modulus> moduli = [new() { From = 0, Value = 1000 }];
 
     private RadzenDataGrid<Modulus> moduliGrid;
 
@@ -234,7 +258,7 @@
 
     #region Loads
 
-    List<ForceLoad> forceLoads = [];
+    List<ForceLoad> forceLoads = [new() { Position = 0.1, Value = 100 }];
     List<MomentLoad> momentLoads = [];
     List<ContinuousLoad> continuousLoads = [];
 
@@ -321,6 +345,85 @@
     {
         SelectLoadList<T>()?.Remove(load);
         await SelectLoadGrid<T>().Reload();
+    }
+
+    #endregion
+
+    #region Calculation
+
+    private string reaction1Text = emptyResultText;
+    private string reaction2Text = emptyResultText;
+    private string maxForceText = emptyResultText;
+    private string maxMomentText = emptyResultText;
+    private string maxStressText = emptyResultText;
+
+    private const string emptyResultText = "-";
+
+    private Output output = new()
+        {
+            Points = [],
+            Reaction1 = new MomentLoad(),
+            Reaction2 = new ForceLoad()
+        };
+    bool success = false;
+
+    private double minForce;
+    private double maxForce;
+    private double minMoment;
+    private double maxMoment;
+    private double minStress;
+    private double maxStress;
+
+    private void Calculate()
+    {
+        Beam beam;
+        Load[] loads = [.. forceLoads, .. momentLoads, .. continuousLoads];
+
+        if (beamType == BeamType.OneSupport)
+            beam = new OneSupportBeam
+                {
+                    Length = lengthA + lengthB,
+                    SupportA = lengthA,
+                    Moduli = moduli,
+                    Loads = loads
+                };
+
+        else if (beamType == BeamType.TwoSupports)
+            beam = new TwoSupportsBeam
+                {
+                    Length = lengthA + lengthB + lengthC,
+                    SupportA = lengthA,
+                    SupportB = lengthA + lengthB,
+                    Moduli = moduli,
+                    Loads = loads
+                };
+
+        else
+            throw new InvalidOperationException("Unsupported beam type");
+
+        output = CalculationService.Calculate(beam, 0.001);
+        success = true;
+
+        minForce = Math.Floor(output.Points.Min(p => p.Force, p => p.ForceJump));
+        maxForce = Math.Ceiling(output.Points.Max(p => p.Force, p => p.ForceJump));
+        minMoment = Math.Floor(output.Points.Min(p => p.Moment, p => p.MomentJump));
+        maxMoment = Math.Ceiling(output.Points.Max(p => p.Moment, p => p.MomentJump));
+        minStress = Math.Floor(output.Points.Min(p => p.Stress, p => p.StressJump));
+        maxStress = Math.Ceiling(output.Points.Max(p => p.Stress, p => p.StressJump));
+        
+        if (beam is OneSupportBeam)
+        {
+            reaction1Text = $"MA = {output.Reaction1.Value} Nm";
+            reaction2Text = $"Ay = {output.Reaction2.Value} N";
+        }
+        else if (beam is TwoSupportsBeam)
+        {
+            reaction1Text = $"Ay = {output.Reaction1.Value} N";
+            reaction2Text = $"By = {output.Reaction2.Value} N";
+        }
+        maxForceText = output.MaxForce.ToString() + " N";
+        maxMomentText = output.MaxMoment.ToString() + " Nm";
+        maxStressText = output.MaxStress.ToString() + " MPa";
     }
 
     #endregion

@@ -6,6 +6,13 @@ using Application.Services.CreatePoints;
 
 namespace Application.Services.Calculation
 {
+    /// <summary>
+    /// Service for performing calculations on a beam.
+    /// </summary>
+    /// <param name="createPointsService">Service for creating points on the beam.</param>
+    /// <param name="assignForceService">Service for assigning shear force to points.</param>
+    /// <param name="assignMomentService">Service for assigning bending moment to points.</param>
+    /// <param name="assignStressService">Service for assigning mechanical stress in bending to points.</param>
     public class CalculationService(
         ICreatePointsService createPointsService,
         IAssignForceService assignForceService,
@@ -18,7 +25,8 @@ namespace Application.Services.Calculation
         private readonly IAssignMomentService _assignMomentService = assignMomentService;
         private readonly IAssignStressService _assignStressService = assignStressService;
 
-        public void Calculate(Beam beam, double lengthBetweenPoints)
+        /// <inheritdoc />
+        public Output Calculate(Beam beam, double lengthBetweenPoints)
         {
             Load[] reactions = [.. beam.GetReactions()];
             Load[] totalLoads = [.. beam.Loads, .. reactions];
@@ -27,6 +35,13 @@ namespace Application.Services.Calculation
             _assignForceService.AssignForce(points, totalLoads);
             _assignMomentService.AssignMoment(points, totalLoads);
             _assignStressService.AssignStress(points, beam.Moduli);
+
+            return new()
+            {
+                Points = points,
+                Reaction1 = reactions[0],
+                Reaction2 = reactions[1]
+            };
         }
     }
 }
