@@ -1,8 +1,7 @@
-﻿using Application;
-using Application.Services.CreatePoints;
+﻿using Application.Services.CreatePoints;
 using FluentAssertions;
 
-namespace UnitTests
+namespace Application.UnitTests
 {
     public class CreatePointsServiceTests
     {

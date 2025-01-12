@@ -3,7 +3,7 @@ using Application.PointComponents;
 using Application.Services.AssignMoment;
 using FluentAssertions;
 
-namespace UnitTests
+namespace Application.IntegrationTests
 {
     public class AssignMomentServiceTests
     {

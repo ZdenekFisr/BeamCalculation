@@ -3,7 +3,7 @@ using Application.PointComponents;
 using Application.Services.AssignStress;
 using FluentAssertions;
 
-namespace UnitTests
+namespace Application.UnitTests
 {
     public class AssignStressServiceTests
     {

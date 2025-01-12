@@ -31,7 +31,21 @@
                 return 0;
 
             if (currentPointPosition <= Position + Length)
-                return Value * (EndCoefficient + StartCoefficient) / 2;
+            {
+                double coefficient = GetCurrentCoefficient(currentPointPosition);
+
+                Load partialLoad = new ContinuousLoad
+                {
+                    Value = Value,
+                    Position = Position,
+                    Length = currentPointPosition - Position,
+                    StartCoefficient = StartCoefficient,
+                    EndCoefficient = coefficient
+                };
+
+                Load[] partialLoadsSimplified = [.. partialLoad.GetSimplifiedLoads()];
+                return partialLoadsSimplified.Sum(load => load.Value);
+            }
 
             return GetForceAtPosition(currentPointPosition);
         }
@@ -75,16 +89,69 @@
 
         public override ICollection<Load> GetSimplifiedLoads()
         {
+            if (StartCoefficient == 0 && EndCoefficient == 0)
+                return [];
+
+            if (StartCoefficient == 0)
+                return [new ForceLoad { Position = Position + 2 * Length / 3, Value = Value * Length / 2 }];
+
+            if (EndCoefficient == 0)
+                return [new ForceLoad { Position = Position + Length / 3, Value = Value * Length / 2 }];
+
             List<Load> result = [];
 
-            if (StartCoefficient != 0 && EndCoefficient != 0)
+            if (Math.Sign(StartCoefficient) != Math.Sign(EndCoefficient))
             {
-                result.Add(new ForceLoad
+                double totalRange = Math.Abs(StartCoefficient) + Math.Abs(EndCoefficient);
+
+                if (StartCoefficient < 0)
                 {
-                    Value = Value * (EndCoefficient + StartCoefficient) / 2 * Length,
-                    Position = Position + Length / 2
-                });
+                    double negativePartLength = Length * Math.Abs(StartCoefficient) / totalRange;
+                    double positivePartLength = Length * Math.Abs(EndCoefficient) / totalRange;
+
+                    result.Add(new ForceLoad
+                    {
+                        Value = Value * StartCoefficient / 2 * negativePartLength,
+                        Position = Position + negativePartLength / 3
+                    });
+                    result.Add(new ForceLoad
+                    {
+                        Value = Value * EndCoefficient / 2 * positivePartLength,
+                        Position = Position + Length - positivePartLength / 3
+                    });
+                }
+                else
+                {
+                    double positivePartLength = Length * Math.Abs(StartCoefficient) / totalRange;
+                    double negativePartLength = Length * Math.Abs(EndCoefficient) / totalRange;
+
+                    result.Add(new ForceLoad
+                    {
+                        Value = Value * StartCoefficient / 2 * positivePartLength,
+                        Position = Position + positivePartLength / 3
+                    });
+                    result.Add(new ForceLoad
+                    {
+                        Value = Value * EndCoefficient / 2 * negativePartLength,
+                        Position = Position + Length - negativePartLength / 3
+                    });
+                }
+
+                return result;
             }
+
+            if (StartCoefficient < 0 && EndCoefficient < 0)
+            {
+                Value = -Value;
+                StartCoefficient = -StartCoefficient;
+                EndCoefficient = -EndCoefficient;
+            }
+
+            result.Add(new ForceLoad
+            {
+                Value = Value * Math.Min(StartCoefficient, EndCoefficient) * Length,
+                Position = Position + Length / 2
+            });
 
             if (StartCoefficient == EndCoefficient)
                 return result;
