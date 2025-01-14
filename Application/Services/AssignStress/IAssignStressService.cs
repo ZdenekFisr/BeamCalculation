@@ -1,4 +1,5 @@
-﻿using Application.Input;
+﻿using Application.Exceptions;
+using Application.Input;
 using Application.PointComponents;
 
 namespace Application.Services.AssignStress
@@ -13,7 +14,7 @@ namespace Application.Services.AssignStress
         /// </summary>
         /// <param name="points">Collection of points.</param>
         /// <param name="moduli">Collection of section moduli.</param>
-        /// <exception cref="InvalidOperationException">Thrown when the modulus of elasticity for a point is not defined correctly.</exception>
+        /// <exception cref="ModulusNotDefinedException">Thrown when the bending modulus for a point is not defined correctly.</exception>
         void AssignStress(ICollection<IStress> points, ICollection<Modulus> moduli);
     }
 }

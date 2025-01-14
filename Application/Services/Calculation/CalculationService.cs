@@ -1,4 +1,5 @@
-﻿using Application.Input;
+﻿using Application.Exceptions;
+using Application.Input;
 using Application.Services.AssignForce;
 using Application.Services.AssignMoment;
 using Application.Services.AssignStress;
@@ -28,6 +29,15 @@ namespace Application.Services.Calculation
         /// <inheritdoc />
         public Output Calculate(Beam beam, double lengthBetweenPoints)
         {
+            if (beam.Moduli.Any(m => m.Value <= 0))
+                throw new InvalidModulusException();
+
+            if (beam.Loads.Any(l => l.Position < 0 || l.Position > beam.Length))
+                throw new LoadOutsideOfBeamException();
+
+            if (beam.Loads.Any(l => l is ContinuousLoad cl && cl.Position + cl.Length > beam.Length))
+                throw new ContinuousLoadExceedsBeamException();
+
             Load[] reactions = [.. beam.GetReactions()];
             Load[] totalLoads = [.. beam.Loads, .. reactions];
 

@@ -1,4 +1,5 @@
-﻿using Application.Input;
+﻿using Application.Exceptions;
+using Application.Input;
 using Application.PointComponents;
 
 namespace Application.Services.AssignStress
@@ -16,7 +17,7 @@ namespace Application.Services.AssignStress
                 Modulus currentModulus = moduli
                     .Where(m => m.From <= point.Position)
                     .MinBy(m => point.Position - m.From)
-                    ?? throw new InvalidOperationException($"The modulus of elasticity for point at position {point.Position} is not defined correctly.");
+                    ?? throw new ModulusNotDefinedException();
 
                 Modulus? previousModulus = currentModulus.From == point.Position
                     ? moduli

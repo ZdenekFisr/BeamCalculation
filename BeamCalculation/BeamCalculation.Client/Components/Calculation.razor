@@ -25,6 +25,9 @@
                         <RadzenNumeric TValue="double" @bind-Value=lengthC Min="0" Max="1000" Step="0.1" />
                     </RadzenFormField>
                 }
+                <RadzenFormField Text="Precision [mm]">
+                    <RadzenNumeric TValue="byte" @bind-Value=precision Min="1" Max="100" Step="1" />
+                </RadzenFormField>
             </RadzenColumn>
 
             <RadzenColumn Size="9">
@@ -32,8 +35,8 @@
                     <RadzenStack Orientation="Orientation.Vertical">
                         <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text="Add" Click="InsertModulus" />
                         <RadzenDataGrid @ref=moduliGrid TItem="Modulus" Data=@moduli
-                                        RowCreate="OnCreateModulus" RowUpdate="OnUpdateModulus"
-                                        EmptyText="No moduli yet. This list must contain a modulus with the property 'From' at 0 m.">
+                        RowCreate="OnCreateModulus" RowUpdate="OnUpdateModulus"
+                        EmptyText="No moduli yet. This list must contain a modulus with the property 'From' at 0 m.">
                             <Columns>
                                 <RadzenDataGridColumn Property="From" Title="From [m]" Sortable="false">
                                     <EditTemplate>
@@ -210,6 +213,10 @@
         <ResultChart Data=@PointTransformationService.TransformPoints(output.Points, p => p.Moment, p => p.MomentJump) ValueAxisTitle="Moment [Nm]" MinValue=@minMoment MaxValue=@maxMoment LineColor="Green" />
         <ResultChart Data=@PointTransformationService.TransformPoints(output.Points, p => p.Stress, p => p.StressJump) ValueAxisTitle="Stress [MPa]" MinValue=@minStress MaxValue=@maxStress LineColor="Red" />
     }
+    else
+    {
+        <RadzenLabel Text=@errorMessage Style="color: red" />
+    }
 </RadzenStack>
 
 @code {
@@ -219,6 +226,7 @@
     private double lengthA = 0;
     private double lengthB = 0.2;
     private double lengthC = 0;
+    private byte precision = 1;
 
     List<Modulus> moduli = [new() { From = 0, Value = 1000 }];
 
@@ -382,6 +390,7 @@
             Reaction2 = new ForceLoad()
         };
     bool success = false;
+    string errorMessage = string.Empty;
 
     private double minForce;
     private double maxForce;
@@ -417,8 +426,17 @@
         else
             throw new InvalidOperationException("Unsupported beam type");
 
-        output = CalculationService.Calculate(beam, 0.001);
-        success = true;
+        try
+        {
+            output = CalculationService.Calculate(beam, (double)precision / 1000);
+            success = true;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+            success = false;
+            return;
+        }
 
         minForce = Math.Floor(output.Points.Min(p => p.Force, p => p.ForceJump));
         maxForce = Math.Ceiling(output.Points.Max(p => p.Force, p => p.ForceJump));

@@ -1,4 +1,5 @@
-﻿using Application.Input;
+﻿using Application.Exceptions;
+using Application.Input;
 using Application.PointComponents;
 using Application.Services.AssignStress;
 using FluentAssertions;
@@ -59,6 +60,33 @@ namespace Application.UnitTests
         [Fact]
         public void AssignStress_AllCases_NegativeMoment()
             => PerformAssignStressTest(-1);
+
+        [Fact]
+        public void AssignStress_ModulusNotDefined_EmptyModuli()
+        {
+            TestPoint[] points = new TestPoint[1001];
+            for (int i = 0; i < points.Length; i++)
+            {
+                points[i] = new TestPoint { Position = (double)i / 1000 };
+            }
+            Modulus[] moduli = [];
+            _assignStressService.Invoking(x => x.AssignStress(points, moduli)).Should().Throw<ModulusNotDefinedException>();
+        }
+
+        [Fact]
+        public void AssignStress_ModulusNotDefined_ModuliDoNotCoverAllPoints()
+        {
+            TestPoint[] points = new TestPoint[1001];
+            for (int i = 0; i < points.Length; i++)
+            {
+                points[i] = new TestPoint { Position = (double)i / 1000 };
+            }
+            Modulus[] moduli =
+            [
+                new Modulus { From = 0.2, Value = 40000 }
+            ];
+            _assignStressService.Invoking(x => x.AssignStress(points, moduli)).Should().Throw<ModulusNotDefinedException>();
+        }
     }
 
     public class TestPoint : IStress
