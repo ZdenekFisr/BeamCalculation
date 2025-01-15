@@ -1,0 +1,153 @@
+﻿<RadzenRow>
+    <RadzenColumn Size="6">
+        <RadzenFieldset Text="Cross-section">
+            <RadzenRadioButtonList TValue="CrossSectionType" @bind-Value="CrossSectionType" Orientation="Orientation.Vertical">
+                <Items>
+                    <RadzenRadioButtonListItem Value="CrossSectionType.Square" Text="Square" />
+                    <RadzenRadioButtonListItem Value="CrossSectionType.SquareStandingOnCorner" Text="Square standing on its corner" />
+                    <RadzenRadioButtonListItem Value="CrossSectionType.HollowSquare" Text="Hollow square" />
+                    <RadzenRadioButtonListItem Value="CrossSectionType.HollowSquareStandingOnCorner" Text="Hollow square standing on its corner" />
+                    <RadzenRadioButtonListItem Value="CrossSectionType.Rectangle" Text="Rectangle" />
+                    <RadzenRadioButtonListItem Value="CrossSectionType.Circle" Text="Circle" />
+                    <RadzenRadioButtonListItem Value="CrossSectionType.ThickPipe" Text="Thick-walled pipe" />
+                    <RadzenRadioButtonListItem Value="CrossSectionType.ThinPipe" Text="Thin-walled pipe" />
+                    <RadzenRadioButtonListItem Value="CrossSectionType.Custom" Text="Custom" />
+                </Items>
+            </RadzenRadioButtonList>
+        </RadzenFieldset>
+    </RadzenColumn>
+    <RadzenColumn Size="6">
+        <RadzenFieldset Text="Dimensions">
+            <RadzenFormField Text=@dimension1Name>
+                <RadzenNumeric TValue="double" @bind-Value=dimension1 Min="0" Step="1" Change="OnDimensionChanged" />
+            </RadzenFormField>
+            @if (!string.IsNullOrEmpty(dimension2Name))
+            {
+                <RadzenFormField Text=@dimension2Name>
+                    <RadzenNumeric TValue="double" @bind-Value=dimension2 Min="0" Step="1" Change="OnDimensionChanged" />
+                </RadzenFormField>
+            }
+            <RadzenLabel Text=@($"Value: {Value} mm^3") />
+        </RadzenFieldset>
+    </RadzenColumn>
+</RadzenRow>
+
+@code {
+    [Parameter]
+    public double Value
+    {
+        get => value;
+        set
+        {
+            if (this.value != value)
+            {
+                this.value = value;
+                ValueChanged.InvokeAsync(value);
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<double> ValueChanged { get; set; }
+
+    private CrossSectionType crossSectionType = CrossSectionType.Custom;
+    private string dimension1Name = string.Empty;
+    private string dimension2Name = string.Empty;
+    private double dimension1 = 0;
+    private double dimension2 = 0;
+    private double value;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        SetDimensionNames();
+    }
+
+    private CrossSectionType CrossSectionType
+    {
+        get => crossSectionType;
+        set
+        {
+            if (crossSectionType != value)
+            {
+                crossSectionType = value;
+                OnCrossSectionTypeChanged();
+            }
+        }
+    }
+
+    private void SetDimensionNames()
+    {
+        switch (crossSectionType)
+        {
+            case CrossSectionType.Square:
+            case CrossSectionType.SquareStandingOnCorner:
+                dimension1Name = "Side [mm]";
+                dimension2Name = string.Empty;
+                break;
+            case CrossSectionType.HollowSquare:
+            case CrossSectionType.HollowSquareStandingOnCorner:
+                dimension1Name = "Outer side [mm]";
+                dimension2Name = "Inner side [mm]";
+                break;
+            case CrossSectionType.Rectangle:
+                dimension1Name = "Width [mm]";
+                dimension2Name = "Height [mm]";
+                break;
+            case CrossSectionType.Circle:
+                dimension1Name = "Diameter [mm]";
+                dimension2Name = string.Empty;
+                break;
+            case CrossSectionType.ThickPipe:
+                dimension1Name = "Outer diameter [mm]";
+                dimension2Name = "Inner diameter [mm]";
+                break;
+            case CrossSectionType.ThinPipe:
+                dimension1Name = "Outer diameter [mm]";
+                dimension2Name = "Wall thickness [mm]";
+                break;
+            case CrossSectionType.Custom:
+                dimension1Name = "Value [mm^3]";
+                dimension2Name = string.Empty;
+                break;
+        }
+    }
+
+    private double CalculateModulus(double dimension1, double dimension2)
+    {
+        switch (crossSectionType)
+        {
+            case CrossSectionType.Square:
+                return Math.Pow(dimension1, 3) / 6;
+            case CrossSectionType.SquareStandingOnCorner:
+                return Math.Pow(dimension1, 3) * Math.Sqrt(2) / 12;
+            case CrossSectionType.HollowSquare:
+                return (Math.Pow(dimension1, 4) - Math.Pow(dimension2, 4)) / (6 * dimension1);
+            case CrossSectionType.HollowSquareStandingOnCorner:
+                return (Math.Pow(dimension1, 4) - Math.Pow(dimension2, 4)) * Math.Sqrt(2) / (12 * dimension1);
+            case CrossSectionType.Rectangle:
+                return dimension1 * Math.Pow(dimension2, 2) / 6;
+            case CrossSectionType.Circle:
+                return Math.PI * Math.Pow(dimension1, 3) / 32;
+            case CrossSectionType.ThickPipe:
+                return Math.PI * (Math.Pow(dimension1, 4) - Math.Pow(dimension2, 4)) / (32 * dimension1);
+            case CrossSectionType.ThinPipe:
+                return Math.PI * Math.Pow(dimension1, 2) * dimension2 / 4;
+            case CrossSectionType.Custom:
+                return dimension1;
+            default:
+                return 0;
+        }
+    }
+
+    private void OnCrossSectionTypeChanged()
+    {
+        SetDimensionNames();
+        Value = CalculateModulus(dimension1, dimension2);
+    }
+
+    private void OnDimensionChanged()
+    {
+        Value = CalculateModulus(dimension1, dimension2);
+    }
+}

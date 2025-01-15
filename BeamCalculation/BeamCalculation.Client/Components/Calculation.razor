@@ -1,5 +1,6 @@
 ﻿@inject ICalculationService CalculationService
 @inject IPointTransformationService PointTransformationService
+@inject DialogService DialogService
 
 <RadzenText TextStyle="TextStyle.H4">Beam calculation</RadzenText>
 
@@ -9,8 +10,8 @@
             <RadzenColumn Size="3">
                 <RadzenRadioButtonList TValue="BeamType" @bind-Value=beamType Orientation="Orientation.Vertical">
                     <Items>
-                        <RadzenRadioButtonListItem Value="BeamType.OneSupport" Text="One support"></RadzenRadioButtonListItem>
-                        <RadzenRadioButtonListItem Value="BeamType.TwoSupports" Text="Two supports"></RadzenRadioButtonListItem>
+                        <RadzenRadioButtonListItem Value="BeamType.OneSupport" Text="One support" />
+                        <RadzenRadioButtonListItem Value="BeamType.TwoSupports" Text="Two supports" />
                     </Items>
                 </RadzenRadioButtonList>
                 <RadzenFormField Text="Length of part A [m]">
@@ -33,7 +34,10 @@
             <RadzenColumn Size="9">
                 <RadzenFieldset Text="Moduli">
                     <RadzenStack Orientation="Orientation.Vertical">
-                        <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text="Add" Click="InsertModulus" />
+                        <RadzenStack Orientation="Orientation.Horizontal">
+                            <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text="Add" Click="InsertModulus" />
+                            <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text="Calculate and add" Click="InsertModulusFromDialog" />
+                        </RadzenStack>
                         <RadzenDataGrid @ref=moduliGrid TItem="Modulus" Data=@moduli
                         RowCreate="OnCreateModulus" RowUpdate="OnUpdateModulus"
                         EmptyText="No moduli yet. This list must contain a modulus with the property 'From' at 0 m.">
@@ -72,7 +76,9 @@
             <RadzenColumn Size="3">
                 <RadzenFieldset Text="Force loads">
                     <RadzenStack Orientation="Orientation.Vertical">
-                        <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text="Add" Click="InsertLoad<ForceLoad>" />
+                        <RadzenStack Orientation="Orientation.Horizontal">
+                            <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text="Add" Click="InsertLoad<ForceLoad>" />
+                        </RadzenStack>
                         <RadzenDataGrid @ref=forceLoadsGrid TItem="ForceLoad" Data=@forceLoads
                         RowCreate="OnCreateLoad" RowUpdate="OnUpdateLoad"
                         EmptyText="No force loads yet.">
@@ -107,7 +113,9 @@
             <RadzenColumn Size="3">
                 <RadzenFieldset Text="Moment loads">
                     <RadzenStack Orientation="Orientation.Vertical">
-                        <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text="Add" Click="InsertLoad<MomentLoad>" />
+                        <RadzenStack Orientation="Orientation.Horizontal">
+                            <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text="Add" Click="InsertLoad<MomentLoad>" />
+                        </RadzenStack>
                         <RadzenDataGrid @ref=momentLoadsGrid TItem="MomentLoad" Data=@momentLoads
                         RowCreate="OnCreateLoad" RowUpdate="OnUpdateLoad"
                         EmptyText="No moment loads yet.">
@@ -142,7 +150,9 @@
             <RadzenColumn Size="6">
                 <RadzenFieldset Text="Continuous loads">
                     <RadzenStack Orientation="Orientation.Vertical">
-                        <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text="Add" Click="InsertLoad<ContinuousLoad>" />
+                        <RadzenStack Orientation="Orientation.Horizontal">
+                            <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text="Add" Click="InsertLoad<ContinuousLoad>" />
+                        </RadzenStack>
                         <RadzenDataGrid @ref=continuousLoadsGrid TItem="ContinuousLoad" Data=@continuousLoads
                         RowCreate="OnCreateLoad" RowUpdate="OnUpdateLoad"
                         EmptyText="No continuous loads yet.">
@@ -245,8 +255,33 @@
 
     private async Task InsertModulus()
     {
-        Modulus modulus = new();
+        Modulus modulus = new() { Value = 2000 };
         await moduliGrid.InsertRow(modulus);
+    }
+
+    private async Task InsertModulusFromDialog()
+    {
+        double modulusValue = 0;
+        await DialogService.OpenAsync("Calculate and add modulus", ds =>
+        @<RadzenStack>
+            <ModulusDialog @bind-Value=modulusValue />
+            <RadzenStack Orientation="Orientation.Horizontal">
+                <RadzenButton Text="Cancel" Click="ds.Close" />
+                <RadzenButton Text="Add" Click="@(async () =>
+                    {
+                        if (double.IsNaN(modulusValue))
+                            await DialogService.Alert("Modulus must be a valid number. Check for division by zero.");
+                        else if (modulusValue <= 0)
+                            await DialogService.Alert("Modulus must be a positive number.");
+                        else
+                        {
+                            Modulus modulus = new() { Value = modulusValue };
+                            await moduliGrid.InsertRow(modulus);
+                            ds.Close();
+                        }
+                    })" />
+            </RadzenStack>
+        </RadzenStack>);
     }
 
     private async Task EditModulus(Modulus modulus)
