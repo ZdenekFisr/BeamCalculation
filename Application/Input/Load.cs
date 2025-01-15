@@ -20,14 +20,14 @@
         /// </summary>
         /// <param name="currentPointPosition">Position on the beam in meters.</param>
         /// <returns>Influence on the shear force in N.</returns>
-        public abstract double GetInfluenceOnShearForce(double currentPointPosition);
+        public abstract (double force, double? forceBeforeJump) GetInfluenceOnShearForce(double currentPointPosition);
 
         /// <summary>
         /// Returns the influence of the load on the bending moment at a given position.
         /// </summary>
         /// <param name="currentPointPosition">Position on the beam in meters.</param>
         /// <returns>Influence on the bending moment in Nm.</returns>
-        public abstract double GetInfluenceOnBendingMoment(double currentPointPosition);
+        public abstract (double moment, double? momentBeforeJump) GetInfluenceOnBendingMoment(double currentPointPosition);
 
         /// <summary>
         /// Returns a simplified version of the load.

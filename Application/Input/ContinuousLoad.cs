@@ -25,12 +25,12 @@
         /// </summary>
         public double EndCoefficient { get; set; }
 
-        public override double GetInfluenceOnShearForce(double currentPointPosition)
+        public override (double, double?) GetInfluenceOnShearForce(double currentPointPosition)
         {
+            double force;
             if (currentPointPosition <= Position)
-                return 0;
-
-            if (currentPointPosition <= Position + Length)
+                force = 0;
+            else if (currentPointPosition <= Position + Length)
             {
                 double coefficient = GetCurrentCoefficient(currentPointPosition);
 
@@ -44,18 +44,21 @@
                 };
 
                 Load[] partialLoadsSimplified = [.. partialLoad.GetSimplifiedLoads()];
-                return partialLoadsSimplified.Sum(load => load.Value);
+                force = partialLoadsSimplified.Sum(load => load.Value);
             }
+            else
+                force = Value * Length;
 
-            return GetForceAtPosition(currentPointPosition);
+            return (force, null);
         }
 
-        public override double GetInfluenceOnBendingMoment(double currentPointPosition)
+        public override (double, double?) GetInfluenceOnBendingMoment(double currentPointPosition)
         {
+            double moment;
             if (currentPointPosition <= Position)
-                return 0;
+                moment = 0;
 
-            if (currentPointPosition <= Position + Length)
+            else if (currentPointPosition <= Position + Length)
             {
                 double coefficient = GetCurrentCoefficient(currentPointPosition);
 
@@ -69,22 +72,21 @@
                 };
 
                 Load[] partialLoadsSimplified = [.. partialLoad.GetSimplifiedLoads()];
-                return partialLoadsSimplified.Sum(load => load.Value * load.Position);
+                moment = partialLoadsSimplified.Sum(load => load.Value * (currentPointPosition - load.Position));
             }
 
-            Load[] loadsSimplified = [.. GetSimplifiedLoads()];
-            return loadsSimplified.Sum(load => load.Value * load.Position);
+            else
+            {
+                Load[] loadsSimplified = [.. GetSimplifiedLoads()];
+                moment = loadsSimplified.Sum(load => load.Value * (currentPointPosition - load.Position));
+            }
+
+            return (moment, null);
         }
 
         private double GetCurrentCoefficient(double position)
         {
             return StartCoefficient + (EndCoefficient - StartCoefficient) * (position - Position) / Length;
-        }
-
-        private double GetForceAtPosition(double position)
-        {
-            double coefficient = GetCurrentCoefficient(position);
-            return Value * (StartCoefficient + coefficient) / 2 * (position - Position) / Length;
         }
 
         public override ICollection<Load> GetSimplifiedLoads()

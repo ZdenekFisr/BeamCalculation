@@ -10,20 +10,17 @@
         /// </summary>
         public override double Value { get; set; }
 
-        public override double GetInfluenceOnShearForce(double currentPointPosition)
+        public override (double, double?) GetInfluenceOnShearForce(double currentPointPosition)
         {
-            if (Position <= currentPointPosition)
-                return Value;
-
-            return 0;
+            double force = Position <= currentPointPosition ? Value : 0;
+            double? forceBeforeJump = Position == currentPointPosition ? Value : null;
+            return (force, forceBeforeJump);
         }
 
-        public override double GetInfluenceOnBendingMoment(double currentPointPosition)
+        public override (double, double?) GetInfluenceOnBendingMoment(double currentPointPosition)
         {
-            if (Position < currentPointPosition)
-                return Value * (currentPointPosition - Position);
-
-            return 0;
+            double moment = Position < currentPointPosition ? Value * (currentPointPosition - Position) : 0;
+            return (moment, null);
         }
 
         public override ICollection<Load> GetSimplifiedLoads()

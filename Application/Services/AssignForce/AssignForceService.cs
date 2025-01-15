@@ -16,12 +16,11 @@ namespace Application.Services.AssignForce
                 double forceJump = 0;
                 foreach (Load load in loads)
                 {
-                    point.Force += load.GetInfluenceOnShearForce(point.Position);
+                    (double force, double? forceBeforeJump) = load.GetInfluenceOnShearForce(point.Position);
 
-                    if (load is ForceLoad forceLoad && forceLoad.Position == point.Position)
-                    {
-                        forceJump += forceLoad.Value;
-                    }
+                    point.Force += force;
+                    if (forceBeforeJump.HasValue)
+                        forceJump += forceBeforeJump.Value;
                 }
 
                 if (forceJump != 0)

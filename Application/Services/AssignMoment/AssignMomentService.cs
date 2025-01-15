@@ -16,16 +16,15 @@ namespace Application.Services.AssignMoment
                 double momentJump = 0;
                 foreach (Load load in loads)
                 {
-                    point.Moment += load.GetInfluenceOnBendingMoment(point.Position);
+                    (double moment, double? momentBeforeJump) = load.GetInfluenceOnBendingMoment(point.Position);
 
-                    if (load is MomentLoad momentLoad && momentLoad.Position == point.Position)
-                    {
-                        momentJump += momentLoad.Value;
-                    }
+                    point.Moment += moment;
+                    if (momentBeforeJump.HasValue)
+                        momentJump += momentBeforeJump.Value;
                 }
 
                 if (momentJump != 0)
-                    point.MomentJump = point.Moment + momentJump;
+                    point.MomentJump = point.Moment - momentJump;
             }
         }
     }
