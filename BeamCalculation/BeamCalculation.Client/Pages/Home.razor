@@ -1,6 +1,12 @@
-﻿@page "/"
+﻿@page "/{lang}"
+@page "/"
 @rendermode InteractiveWebAssembly
 
 <PageTitle>Home</PageTitle>
 
-<Calculation></Calculation>
+<Calculation Lang=@Lang></Calculation>
+
+@code {
+    [Parameter]
+    public required string Lang { get; set; }
+}

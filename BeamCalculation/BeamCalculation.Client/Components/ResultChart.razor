@@ -1,7 +1,7 @@
 ﻿<RadzenChart>
     <RadzenLineSeries Data=@Data CategoryProperty="X" ValueProperty="Y" Stroke=@LineColor />
     <RadzenCategoryAxis>
-        <RadzenAxisTitle Text="Beam [m]" />
+        <RadzenAxisTitle Text=@CategoryAxisTitle />
         <RadzenGridLines Visible="true" />
     </RadzenCategoryAxis>
     <RadzenValueAxis Min=@MinValue Max=@MaxValue>
@@ -16,6 +16,9 @@
     public PointForPlot[]? Data { get; set; }
 
     [Parameter]
+    public required string CategoryAxisTitle { get; set; }
+
+    [Parameter]
     public required string ValueAxisTitle { get; set; }
 
     [Parameter]
@@ -26,6 +29,4 @@
 
     [Parameter]
     public required string LineColor { get; set; }
-
-
 }

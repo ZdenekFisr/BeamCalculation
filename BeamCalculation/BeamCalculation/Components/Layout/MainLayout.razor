@@ -1,10 +1,12 @@
-﻿@using Radzen.Blazor
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
+
+@inject NavigationManager NavigationManager
 
 <div class="page">
     <main>
         <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+            <RadzenLink Text="English" Path=@SwitchToLanguage(Constants.SupportedLanguages[0]) />
+            <RadzenLink Text="Čeština" Path=@SwitchToLanguage(Constants.SupportedLanguages[1]) />
         </div>
 
         <article class="content px-4">
@@ -20,3 +22,25 @@
 </div>
 
 <RadzenComponents @rendermode="InteractiveWebAssembly" />
+
+@code
+{
+    private string SwitchToLanguage(string languageCode)
+    {
+        string? currentLanguageCode = null;
+
+        foreach (string code in Constants.SupportedLanguages)
+        {
+            if (NavigationManager.Uri.Contains($"/{code}"))
+            {
+                currentLanguageCode = code;
+                break;
+            }
+        }
+
+        if (currentLanguageCode is null)
+            return NavigationManager.Uri;
+
+        return NavigationManager.Uri.Replace(@$"/{currentLanguageCode}", @$"/{languageCode}");
+    }
+}

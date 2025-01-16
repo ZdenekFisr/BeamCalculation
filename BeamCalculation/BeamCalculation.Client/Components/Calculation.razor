@@ -1,53 +1,55 @@
 ﻿@inject ICalculationService CalculationService
 @inject IPointTransformationService PointTransformationService
 @inject DialogService DialogService
+@inject ILanguageService LanguageService
+@inject NavigationManager NavigationManager
 
-<RadzenText TextStyle="TextStyle.H4">Beam calculation</RadzenText>
+<RadzenText TextStyle="TextStyle.H4">@text["beamCalc"]</RadzenText>
 
 <RadzenStack Orientation="Orientation.Vertical">
-    <RadzenFieldset Text="Beam">
+    <RadzenFieldset Text=@text["beam"]>
         <RadzenRow>
             <RadzenColumn Size="3">
                 <RadzenRadioButtonList TValue="BeamType" @bind-Value=beamType Orientation="Orientation.Vertical">
                     <Items>
-                        <RadzenRadioButtonListItem Value="BeamType.OneSupport" Text="One support" />
-                        <RadzenRadioButtonListItem Value="BeamType.TwoSupports" Text="Two supports" />
+                        <RadzenRadioButtonListItem Value="BeamType.OneSupport" Text=@text["oneSupport"] />
+                        <RadzenRadioButtonListItem Value="BeamType.TwoSupports" Text=@text["twoSupports"] />
                     </Items>
                 </RadzenRadioButtonList>
-                <RadzenFormField Text="Length of part A [m]">
+                <RadzenFormField Text=@text["lengthA"]>
                     <RadzenNumeric TValue="double" @bind-Value=lengthA Min="0" Max="1000" Step="0.1" />
                 </RadzenFormField>
-                <RadzenFormField Text="Length of part B [m]">
+                <RadzenFormField Text=@text["lengthB"]>
                     <RadzenNumeric TValue="double" @bind-Value=lengthB Min="0" Max="1000" Step="0.1" />
                 </RadzenFormField>
                 @if (beamType == BeamType.TwoSupports)
                 {
-                    <RadzenFormField Text="Length of part C [m]">
+                    <RadzenFormField Text=@text["lengthC"]>
                         <RadzenNumeric TValue="double" @bind-Value=lengthC Min="0" Max="1000" Step="0.1" />
                     </RadzenFormField>
                 }
-                <RadzenFormField Text="Precision [mm]">
+                <RadzenFormField Text=@text["precision"]>
                     <RadzenNumeric TValue="byte" @bind-Value=precision Min="1" Max="100" Step="1" />
                 </RadzenFormField>
             </RadzenColumn>
 
             <RadzenColumn Size="9">
-                <RadzenFieldset Text="Moduli">
+                <RadzenFieldset Text=@text["moduli"]>
                     <RadzenStack Orientation="Orientation.Vertical">
                         <RadzenStack Orientation="Orientation.Horizontal">
-                            <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text="Add" Click="InsertModulus" />
-                            <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text="Calculate and add" Click="InsertModulusFromDialog" />
+                            <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text=@text["add"] Click="InsertModulus" />
+                            <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text=@text["calcAdd"] Click="InsertModulusFromDialog" />
                         </RadzenStack>
                         <RadzenDataGrid @ref=moduliGrid TItem="Modulus" Data=@moduli
                         RowCreate="OnCreateModulus" RowUpdate="OnUpdateModulus"
-                        EmptyText="No moduli yet. This list must contain a modulus with the property 'From' at 0 m.">
+                        EmptyText=@text["noModuli"]>
                             <Columns>
-                                <RadzenDataGridColumn Property="From" Title="From [m]" Sortable="false">
+                                <RadzenDataGridColumn Property="From" Title=@text["from"] Sortable="false">
                                     <EditTemplate>
                                         <RadzenNumeric @bind-Value="context.From" Min="0" Step="0.1" />
                                     </EditTemplate>
                                 </RadzenDataGridColumn>
-                                <RadzenDataGridColumn Property="Value" Title="Value [mm^3]">
+                                <RadzenDataGridColumn Property="Value" Title=@text["valueMm3"]>
                                     <EditTemplate>
                                         <RadzenNumeric @bind-Value="context.Value" Min="0" Step="10" />
                                     </EditTemplate>
@@ -71,24 +73,24 @@
         </RadzenRow>
     </RadzenFieldset>
 
-    <RadzenFieldset Text="Loads">
+    <RadzenFieldset Text=@text["loads"]>
         <RadzenRow>
             <RadzenColumn Size="3">
-                <RadzenFieldset Text="Force loads">
+                <RadzenFieldset Text=@text["forces"]>
                     <RadzenStack Orientation="Orientation.Vertical">
                         <RadzenStack Orientation="Orientation.Horizontal">
                             <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text="Add" Click="InsertLoad<ForceLoad>" />
                         </RadzenStack>
                         <RadzenDataGrid @ref=forceLoadsGrid TItem="ForceLoad" Data=@forceLoads
                         RowCreate="OnCreateLoad" RowUpdate="OnUpdateLoad"
-                        EmptyText="No force loads yet.">
+                        EmptyText=@text["noForces"]>
                             <Columns>
-                                <RadzenDataGridColumn Property="Position" Title="Position [m]" Sortable="false">
+                                <RadzenDataGridColumn Property="Position" Title=@text["position"] Sortable="false">
                                     <EditTemplate>
                                         <RadzenNumeric @bind-Value="context.Position" Min="0" Step="0.1" />
                                     </EditTemplate>
                                 </RadzenDataGridColumn>
-                                <RadzenDataGridColumn Property="Value" Title="Value [N]">
+                                <RadzenDataGridColumn Property="Value" Title=@text["valueN"]>
                                     <EditTemplate>
                                         <RadzenNumeric @bind-Value="context.Value" Step="10" />
                                     </EditTemplate>
@@ -111,21 +113,21 @@
             </RadzenColumn>
 
             <RadzenColumn Size="3">
-                <RadzenFieldset Text="Moment loads">
+                <RadzenFieldset Text=@text["moments"]>
                     <RadzenStack Orientation="Orientation.Vertical">
                         <RadzenStack Orientation="Orientation.Horizontal">
                             <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text="Add" Click="InsertLoad<MomentLoad>" />
                         </RadzenStack>
                         <RadzenDataGrid @ref=momentLoadsGrid TItem="MomentLoad" Data=@momentLoads
                         RowCreate="OnCreateLoad" RowUpdate="OnUpdateLoad"
-                        EmptyText="No moment loads yet.">
+                        EmptyText=@text["noMoments"]>
                             <Columns>
-                                <RadzenDataGridColumn Property="Position" Title="Position [m]" Sortable="false">
+                                <RadzenDataGridColumn Property="Position" Title=@text["position"] Sortable="false">
                                     <EditTemplate>
                                         <RadzenNumeric @bind-Value="context.Position" Min="0" Step="0.1" />
                                     </EditTemplate>
                                 </RadzenDataGridColumn>
-                                <RadzenDataGridColumn Property="Value" Title="Value [Nm]">
+                                <RadzenDataGridColumn Property="Value" Title=@text["valueNm"]>
                                     <EditTemplate>
                                         <RadzenNumeric @bind-Value="context.Value" Step="10" />
                                     </EditTemplate>
@@ -148,36 +150,36 @@
             </RadzenColumn>
 
             <RadzenColumn Size="6">
-                <RadzenFieldset Text="Continuous loads">
+                <RadzenFieldset Text=@text["continuousLoads"]>
                     <RadzenStack Orientation="Orientation.Vertical">
                         <RadzenStack Orientation="Orientation.Horizontal">
                             <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text="Add" Click="InsertLoad<ContinuousLoad>" />
                         </RadzenStack>
                         <RadzenDataGrid @ref=continuousLoadsGrid TItem="ContinuousLoad" Data=@continuousLoads
                         RowCreate="OnCreateLoad" RowUpdate="OnUpdateLoad"
-                        EmptyText="No continuous loads yet.">
+                        EmptyText=@text["noContinuousLoads"]>
                             <Columns>
-                                <RadzenDataGridColumn Property="Position" Title="Position [m]" Sortable="false">
+                                <RadzenDataGridColumn Property="Position" Title=@text["position"] Sortable="false">
                                     <EditTemplate>
                                         <RadzenNumeric @bind-Value="context.Position" Min="0" Step="0.1" />
                                     </EditTemplate>
                                 </RadzenDataGridColumn>
-                                <RadzenDataGridColumn Property="Value" Title="Nom. value [N/m]">
+                                <RadzenDataGridColumn Property="Value" Title=@text["valueN/m"]>
                                     <EditTemplate>
                                         <RadzenNumeric @bind-Value="context.Value" Step="10" />
                                     </EditTemplate>
                                 </RadzenDataGridColumn>
-                                <RadzenDataGridColumn Property="Length" Title="Length [m]">
+                                <RadzenDataGridColumn Property="Length" Title=@text["length"]>
                                     <EditTemplate>
                                         <RadzenNumeric @bind-Value="context.Length" Min="0" Step="0.1" />
                                     </EditTemplate>
                                 </RadzenDataGridColumn>
-                                <RadzenDataGridColumn Property="StartCoefficient" Title="Start coef. [1]">
+                                <RadzenDataGridColumn Property="StartCoefficient" Title=@text["startCoef"]>
                                     <EditTemplate>
                                         <RadzenNumeric @bind-Value="context.StartCoefficient" Min="0" Step="0.1" />
                                     </EditTemplate>
                                 </RadzenDataGridColumn>
-                                <RadzenDataGridColumn Property="EndCoefficient" Title="End coef. [1]">
+                                <RadzenDataGridColumn Property="EndCoefficient" Title=@text["endCoef"]>
                                     <EditTemplate>
                                         <RadzenNumeric @bind-Value="context.EndCoefficient" Min="0" Step="0.1" />
                                     </EditTemplate>
@@ -201,27 +203,27 @@
         </RadzenRow>
     </RadzenFieldset>
 
-    <RadzenButton ButtonStyle="ButtonStyle.Primary" Text="Calculate" Click="Calculate" />
+    <RadzenButton ButtonStyle="ButtonStyle.Primary" Text=@text["calculate"] Click="Calculate" />
     @if (success)
     {
         <RadzenRow AlignItems="AlignItems.Start">
             <RadzenColumn Size="6" Style="max-width: 500px">
-                <RadzenLabel Text="Reactions:" />
+                <RadzenLabel Text=@text["reactions"] />
                 <ResultText Text=@reaction1Text />
                 <ResultText Text=@reaction2Text />
             </RadzenColumn>
             <RadzenColumn Size="6" Style="max-width: 500px">
-                <RadzenLabel Text="Max. force:" />
+                <RadzenLabel Text=@text["maxForce"] />
                 <ResultText Text=@maxForceText />
-                <RadzenLabel Text="Max. moment:" />
+                <RadzenLabel Text=@text["maxMoment"] />
                 <ResultText Text=@maxMomentText />
-                <RadzenLabel Text="Max. stress:" />
+                <RadzenLabel Text=@text["maxStress"] />
                 <ResultText Text=@maxStressText />
             </RadzenColumn>
         </RadzenRow>
-        <ResultChart Data=@PointTransformationService.TransformPoints(output.Points, p => p.Force, p => p.ForceJump) ValueAxisTitle="Force [N]" MinValue=@minForce MaxValue=@maxForce LineColor="Blue" />
-        <ResultChart Data=@PointTransformationService.TransformPoints(output.Points, p => p.Moment, p => p.MomentJump) ValueAxisTitle="Moment [Nm]" MinValue=@minMoment MaxValue=@maxMoment LineColor="Green" />
-        <ResultChart Data=@PointTransformationService.TransformPoints(output.Points, p => p.Stress, p => p.StressJump) ValueAxisTitle="Stress [MPa]" MinValue=@minStress MaxValue=@maxStress LineColor="Red" />
+        <ResultChart Data=@PointTransformationService.TransformPoints(output.Points, p => p.Force, p => p.ForceJump) CategoryAxisTitle=@text["beamM"] ValueAxisTitle=@text["force"] MinValue=@minForce MaxValue=@maxForce LineColor="Blue" />
+        <ResultChart Data=@PointTransformationService.TransformPoints(output.Points, p => p.Moment, p => p.MomentJump) CategoryAxisTitle=@text["beamM"] ValueAxisTitle=@text["moment"] MinValue=@minMoment MaxValue=@maxMoment LineColor="Green" />
+        <ResultChart Data=@PointTransformationService.TransformPoints(output.Points, p => p.Stress, p => p.StressJump) CategoryAxisTitle=@text["beamM"] ValueAxisTitle=@text["stress"] MinValue=@minStress MaxValue=@maxStress LineColor="Red" />
     }
     else
     {
@@ -230,6 +232,21 @@
 </RadzenStack>
 
 @code {
+    [Parameter]
+    public required string Lang { get; set; }
+
+    private Dictionary<string, string> text;
+    private Dictionary<string, string> modulusDialogText;
+
+    protected override void OnInitialized()
+    {
+        if (!Constants.SupportedLanguages.Contains(Lang))
+            NavigationManager.NavigateTo($"/{Constants.SupportedLanguages[0]}");
+
+        text = LanguageService.GetLocalizedStrings("BeamCalculation.Client.Localization.Strings.Calculation.csv", Lang);
+        modulusDialogText = LanguageService.GetLocalizedStrings("BeamCalculation.Client.Localization.Strings.ModulusDialog.csv", Lang);
+    }
+
     #region Beam
 
     private BeamType beamType = BeamType.OneSupport;
@@ -262,17 +279,17 @@
     private async Task InsertModulusFromDialog()
     {
         double modulusValue = 0;
-        await DialogService.OpenAsync("Calculate and add modulus", ds =>
+        await DialogService.OpenAsync(text["calcAddModulus"], ds =>
         @<RadzenStack>
-            <ModulusDialog @bind-Value=modulusValue />
+            <ModulusDialog Lang=@Lang Text=@modulusDialogText @bind-Value=modulusValue />
             <RadzenStack Orientation="Orientation.Horizontal">
-                <RadzenButton Text="Cancel" Click="ds.Close" />
-                <RadzenButton Text="Add" Click="@(async () =>
+                <RadzenButton Text=@text["cancel"] Click="ds.Close" />
+                <RadzenButton Text=@text["add"] Click="@(async () =>
                     {
                         if (double.IsNaN(modulusValue))
-                            await DialogService.Alert("Modulus must be a valid number. Check for division by zero.");
+                            await DialogService.Alert(text["modulusValid"]);
                         else if (modulusValue <= 0)
-                            await DialogService.Alert("Modulus must be a positive number.");
+                            await DialogService.Alert(text["modulusPositive"]);
                         else
                         {
                             Modulus modulus = new() { Value = modulusValue };

@@ -9,6 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Localization\Strings\ModulusDialog.csv" />
+    <EmbeddedResource Include="Localization\Strings\Calculation.csv" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="33.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.0" />
     <PackageReference Include="Radzen.Blazor" Version="5.7.4" />
   </ItemGroup>

@@ -1,0 +1,22 @@
+﻿circle;Circle;Kruh
+crossSection;Cross-section;Průřez
+custom;Custom;Vlastní
+diameter;Diameter [mm];Průměr [mm]
+dimensions;Dimensions;Rozměry
+height;Height [mm];Výška [mm]
+hollowSquare;Hollow square;Dutý čtverec
+hollowSquareCorner;Hollow square standing on its corner;Dutý čtverec postavený na vrcholu
+innerDiameter;Inner diameter [mm];Vnitřní průměr [mm]
+innerSide;Inner side [mm];Vnitřní hrana [mm]
+outerDiameter;Outer diameter [mm];Vnější průměr [mm]
+outerSide;Outer side [mm];Vnější hrana [mm]
+rectangle;Rectangle;Obdélník
+side;Side [mm];Hrana [mm]
+square;Square;Čtverec
+squareCorner;Square standing on its corner;Čtverec postavený na vrcholu
+thickPipe;Thick-walled pipe;Tlustostěnná trubka
+thinPipe;Thin-walled pipe;Tenkostěnná trubka
+value;Value:;Hodnota:
+valueMm3;Value [mm^3];Hodnota [mm^3]
+wall;Wall thickness [mm];Tloušťka stěny [mm]
+width;Width [mm];Šířka [mm]

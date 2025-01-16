@@ -1,0 +1,41 @@
+﻿add;Add;Přidat
+beam;Beam;Nosník
+beamCalc;Beam calculation;Výpočet nosníku
+beamM;Beam [m];Nosník [m]
+calcAdd;Calculate and add;Vypočítat a přidat
+calcAddModulus;Calculate and add modulus;Vypočítat a přidat modul průřezu
+calculate;Calculate;Vypočítat
+cancel;Cancel;Storno
+continuousLoads;Continuous loads;Spojitá zatížení
+endCoef;End coef [1];Koncový koef. [1]
+force;Force [N];Síla [N]
+forces;Forces;Síly
+from;From [m];Od [m]
+length;Length [m];Délka [m]
+lengthA;Length of part A [m];Délka části A [m]
+lengthB;Length of part B [m];Délka části B [m]
+lengthC;Length of part C [m];Délka části C [m]
+loads;Loads;Zatížení
+maxForce;Max. force:;Max. síla:
+maxMoment;Max. moment:;Max. moment:
+maxStress;Max. stress:;Max. napětí:
+moduli;Moduli;Moduly průřezu
+modulusPositive;Modulus must have a positive value.;Modul průřezu musí mít kladnou hodnotu.
+modulusValid;"Modulus must have a valid value. Check for ""NaN"" as result.";"Modul průřezu musí mít platnou hodnotu. Ujistěte se, že výsledkem není ""NaN""."
+moment;Moment [Nm];Moment [Nm]
+moments;Moments;Momenty
+noContinuousLoads;No continuous loads yet.;Seznam neobsahuje žádná spojitá zatížení.
+noForces;No forces yet.;Seznam neobsahuje žádné síly.
+noModuli;No moduli yet. This list must contain a modulus with the property 'From' at 0 m.;Seznam neobsahuje žádné moduly průřezu. Musí zde být modul s vlastností 'Od' na hodnotě 0 m.
+noMoments;No moments yet.;Seznam neobsahuje žádné momenty.
+oneSupport;One support;Vetknutý nosník
+position;Position [m];Poloha [m]
+precision;Precision [mm];Přesnost [mm]
+reactions;Reactions:;Reakce:
+startCoef;Start coef. [1];Počáteční koef. [1]
+stress;Stress [MPa];Napětí [MPa]
+twoSupports;Two supports;Nosník na dvou podporách
+valueMm3;Value [mm^3];Hodnota [mm^3]
+valueN;Value [N];Hodnota [N]
+valueN/m;Value [N/m];Hodnota [N/m]
+valueNm;Value [Nm];Hodnota [Nm]
