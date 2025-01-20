@@ -11,27 +11,6 @@ namespace BeamCalculation.Client.Services.EmbeddedCsv
     public class EmbeddedCsvService : IEmbeddedCsvService
     {
         /// <inheritdoc />
-        public List<T> ReadEmbeddedCsv<T>(string resourceName)
-        {
-            var assembly = Assembly.GetCallingAssembly();
-            var config = new CsvConfiguration(new CultureInfo("en-US"))
-            {
-                Delimiter = ";",
-                HasHeaderRecord = false
-            };
-
-            using Stream? stream = assembly.GetManifestResourceStream(resourceName);
-            if (stream is null)
-                return [];
-
-            using var reader = new StreamReader(stream);
-            using var csv = new CsvReader(reader, config);
-
-            var records = csv.GetRecords<T>().ToList();
-            return records;
-        }
-
-        /// <inheritdoc />
         public Dictionary<string, string> ReadEmbeddedCsv(string resourceName, int keyColumn, int valueColumn)
         {
             var assembly = Assembly.GetCallingAssembly();

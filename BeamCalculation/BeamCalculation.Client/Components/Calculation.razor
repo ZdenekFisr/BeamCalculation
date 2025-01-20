@@ -204,7 +204,7 @@
     </RadzenFieldset>
 
     <RadzenButton ButtonStyle="ButtonStyle.Primary" Text=@text["calculate"] Click="Calculate" />
-    @if (success)
+    @if (calculationSuccess)
     {
         <RadzenRow AlignItems="AlignItems.Start">
             <RadzenColumn Size="6" Style="max-width: 500px">
@@ -441,7 +441,7 @@
             Reaction1 = new MomentLoad(),
             Reaction2 = new ForceLoad()
         };
-    bool success = false;
+    bool calculationSuccess = false;
     string errorMessage = string.Empty;
 
     private double minForce;
@@ -453,6 +453,7 @@
 
     private void Calculate()
     {
+        calculationSuccess = false;
         Beam beam;
         Load[] loads = [.. forceLoads, .. momentLoads, .. continuousLoads];
 
@@ -481,12 +482,41 @@
         try
         {
             output = CalculationService.Calculate(beam, (double)precision / 1000);
-            success = true;
+            calculationSuccess = true;
+        }
+        catch (InvalidModulusException)
+        {
+            errorMessage = text["modulusPositive"];
+            return;
+        }
+        catch (LoadOutsideOfBeamException)
+        {
+            errorMessage = text["loadOutsideOfBeam"];
+            return;
+        }
+        catch (ContinuousLoadExceedsBeamException)
+        {
+            errorMessage = text["continuousLoadExceeds"];
+            return;
+        }
+        catch (InvalidBeamLengthException)
+        {
+            errorMessage = text["invalidBeamLength"];
+            return;
+        }
+        catch (InvalidLengthBetweenPointsException)
+        {
+            errorMessage = text["invalidPrecision"];
+            return;
+        }
+        catch (ModulusNotDefinedException)
+        {
+            errorMessage = text["modulusNotDefined"];
+            return;
         }
         catch (Exception ex)
         {
             errorMessage = ex.Message;
-            success = false;
             return;
         }
 

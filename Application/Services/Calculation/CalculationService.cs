@@ -35,7 +35,7 @@ namespace Application.Services.Calculation
             if (beam.Loads.Any(l => l.Position < 0 || l.Position > beam.Length))
                 throw new LoadOutsideOfBeamException();
 
-            if (beam.Loads.Any(l => l is ContinuousLoad cl && cl.Position + cl.Length > beam.Length))
+            if (beam.Loads.Any(l => l is ContinuousLoad cl && (cl.Position + cl.Length < 0 || cl.Position + cl.Length > beam.Length)))
                 throw new ContinuousLoadExceedsBeamException();
 
             Load[] reactions = [.. beam.GetReactions()];

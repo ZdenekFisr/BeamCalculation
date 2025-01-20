@@ -6,20 +6,25 @@ calcAdd;Calculate and add;Vypočítat a přidat
 calcAddModulus;Calculate and add modulus;Vypočítat a přidat modul průřezu
 calculate;Calculate;Vypočítat
 cancel;Cancel;Storno
+continuousLoadExceeds;At least one continuous load exceeds the beam length.;Minimálně jedno spojité zatížení zasahuje mimo nosník.
 continuousLoads;Continuous loads;Spojitá zatížení
 endCoef;End coef [1];Koncový koef. [1]
 force;Force [N];Síla [N]
 forces;Forces;Síly
 from;From [m];Od [m]
+invalidBeamLength;Total beam length must be greater than zero.;Celková délka nosníku musí být větší než nula.
+invalidPrecision;Precision must be greater than zero.;Přesnost musí být větší než nula.
 length;Length [m];Délka [m]
 lengthA;Length of part A [m];Délka části A [m]
 lengthB;Length of part B [m];Délka části B [m]
 lengthC;Length of part C [m];Délka části C [m]
+loadOutside;At least one load is outside of the beam.;Minimálně jedno zatížení se nachází mimo nosník.
 loads;Loads;Zatížení
 maxForce;Max. force:;Max. síla:
 maxMoment;Max. moment:;Max. moment:
 maxStress;Max. stress:;Max. napětí:
 moduli;Moduli;Moduly průřezu
+modulusNotDefined;The list of moduli must contain a modulus with the property 'From' at 0 m.;V seznamu modulů musí být modul s vlastností 'Od' na hodnotě 0 m.
 modulusPositive;Modulus must have a positive value.;Modul průřezu musí mít kladnou hodnotu.
 modulusValid;"Modulus must have a valid value. Check for ""NaN"" as result.";"Modul průřezu musí mít platnou hodnotu. Ujistěte se, že výsledkem není ""NaN""."
 moment;Moment [Nm];Moment [Nm]
