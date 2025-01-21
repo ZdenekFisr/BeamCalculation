@@ -1,4 +1,5 @@
 ﻿<RadzenChart>
+    <RadzenLineSeries Data=@beam CategoryProperty="X" ValueProperty="Y" Stroke="DarkGray" StrokeWidth="5" />
     <RadzenLineSeries Data=@Data CategoryProperty="X" ValueProperty="Y" Stroke=@LineColor />
     <RadzenCategoryAxis>
         <RadzenAxisTitle Text=@CategoryAxisTitle />
@@ -29,4 +30,17 @@
 
     [Parameter]
     public required string LineColor { get; set; }
+
+    private PointForPlot[] beam;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        beam =
+        [
+            new() { X = 0, Y = 0 },
+            new() { X = Data?.Max(p => p.X) ?? 0.0, Y = 0 }
+        ];
+    }
 }

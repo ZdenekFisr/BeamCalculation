@@ -1,18 +1,23 @@
 ﻿@inherits LayoutComponentBase
 
 @inject NavigationManager NavigationManager
+@inject ThemeService ThemeService
 
 <div class="page">
-    <main>
-        <div class="top-row px-4">
-            <RadzenLink Text="English" Path=@SwitchToLanguage(Constants.SupportedLanguages[0]) />
-            <RadzenLink Text="Čeština" Path=@SwitchToLanguage(Constants.SupportedLanguages[1]) />
-        </div>
-
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
+    <RadzenLayout>
+        <RadzenHeader>
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween" Style="margin: 10px;">
+                <RadzenImage Path="images/logo.png" AlternateText="Beam calculation" />
+                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
+                    <RadzenLink Text="English" Path=@SwitchToLanguage(Constants.SupportedLanguages[0]) />
+                    <RadzenLink Text="Čeština" Path=@SwitchToLanguage(Constants.SupportedLanguages[1]) />
+                </RadzenStack>
+            </RadzenStack>
+        </RadzenHeader>
+        <RadzenBody class="rz-p-1" Style="margin: 10px">
+             @Body
+        </RadzenBody>
+    </RadzenLayout>
 </div>
 
 <div id="blazor-error-ui" data-nosnippet>

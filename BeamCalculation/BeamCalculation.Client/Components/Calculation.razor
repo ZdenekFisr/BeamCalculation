@@ -4,8 +4,6 @@
 @inject ILanguageService LanguageService
 @inject NavigationManager NavigationManager
 
-<RadzenText TextStyle="TextStyle.H4">@text["beamCalc"]</RadzenText>
-
 <RadzenStack Orientation="Orientation.Vertical">
     <RadzenFieldset Text=@text["beam"]>
         <RadzenRow>
@@ -206,19 +204,21 @@
     <RadzenButton ButtonStyle="ButtonStyle.Primary" Text=@text["calculate"] Click="Calculate" />
     @if (calculationSuccess)
     {
-        <RadzenRow AlignItems="AlignItems.Start">
-            <RadzenColumn Size="6" Style="max-width: 500px">
-                <RadzenLabel Text=@text["reactions"] />
-                <ResultText Text=@reaction1Text />
-                <ResultText Text=@reaction2Text />
+        <RadzenRow AlignItems="AlignItems.Start" JustifyContent="JustifyContent.SpaceBetween">
+            <RadzenColumn>
+                <ResultText LabelText=@reaction1Label ValueText=@reaction1Text />
             </RadzenColumn>
-            <RadzenColumn Size="6" Style="max-width: 500px">
-                <RadzenLabel Text=@text["maxForce"] />
-                <ResultText Text=@maxForceText />
-                <RadzenLabel Text=@text["maxMoment"] />
-                <ResultText Text=@maxMomentText />
-                <RadzenLabel Text=@text["maxStress"] />
-                <ResultText Text=@maxStressText />
+            <RadzenColumn>
+                <ResultText LabelText=@reaction2Label ValueText=@reaction2Text />
+            </RadzenColumn>
+            <RadzenColumn>
+                <ResultText LabelText=@text["maxForce"] ValueText=@maxForceText />
+            </RadzenColumn>
+            <RadzenColumn>
+                <ResultText LabelText=@text["maxMoment"] ValueText=@maxMomentText />
+            </RadzenColumn>
+            <RadzenColumn>
+                <ResultText LabelText=@text["maxStress"] ValueText=@maxStressText />
             </RadzenColumn>
         </RadzenRow>
         <ResultChart Data=@PointTransformationService.TransformPoints(output.Points, p => p.Force, p => p.ForceJump) CategoryAxisTitle=@text["beamM"] ValueAxisTitle=@text["force"] MinValue=@minForce MaxValue=@maxForce LineColor="Blue" />
@@ -298,7 +298,8 @@
                         }
                     })" />
             </RadzenStack>
-        </RadzenStack>);
+        </RadzenStack>
+    );
     }
 
     private async Task EditModulus(Modulus modulus)
@@ -427,7 +428,9 @@
 
     #region Calculation
 
+    private string reaction1Label = emptyResultText;
     private string reaction1Text = emptyResultText;
+    private string reaction2Label = emptyResultText;
     private string reaction2Text = emptyResultText;
     private string maxForceText = emptyResultText;
     private string maxMomentText = emptyResultText;
@@ -526,17 +529,20 @@
         maxMoment = Math.Ceiling(output.Points.Max(p => p.Moment, p => p.MomentJump));
         minStress = Math.Floor(output.Points.Min(p => p.Stress, p => p.StressJump));
         maxStress = Math.Ceiling(output.Points.Max(p => p.Stress, p => p.StressJump));
-        
+
         if (beam is OneSupportBeam)
         {
-            reaction1Text = $"MA = {output.Reaction1.Value} Nm";
-            reaction2Text = $"Ay = {output.Reaction2.Value} N";
+            reaction1Label = text["reactionMA"];
+            reaction1Text = Math.Round(output.Reaction1.Value, 2).ToString() + " Nm";
+            reaction2Label = text["reactionAy"];
         }
         else if (beam is TwoSupportsBeam)
         {
-            reaction1Text = $"Ay = {output.Reaction1.Value} N";
-            reaction2Text = $"By = {output.Reaction2.Value} N";
+            reaction1Label = text["reactionAy"];
+            reaction1Text = Math.Round(output.Reaction1.Value, 2).ToString() + " N";
+            reaction2Label = text["reactionBy"];
         }
+        reaction2Text = Math.Round(output.Reaction2.Value, 2).ToString() + " N";
         maxForceText = output.MaxForce.ToString() + " N";
         maxMomentText = output.MaxMoment.ToString() + " Nm";
         maxStressText = output.MaxStress.ToString() + " MPa";

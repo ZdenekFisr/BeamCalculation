@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Localization\Strings\ModulusDialog.csv" />
-    <EmbeddedResource Include="Localization\Strings\Calculation.csv" />
+    <EmbeddedResource Include="Localization\Strings\Home.csv" />
   </ItemGroup>
 
   <ItemGroup>

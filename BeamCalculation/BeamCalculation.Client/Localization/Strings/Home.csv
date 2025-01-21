@@ -8,7 +8,7 @@ calculate;Calculate;Vypočítat
 cancel;Cancel;Storno
 continuousLoadExceeds;At least one continuous load exceeds the beam length.;Minimálně jedno spojité zatížení zasahuje mimo nosník.
 continuousLoads;Continuous loads;Spojitá zatížení
-endCoef;End coef [1];Koncový koef. [1]
+endCoef;End coef. [1];Koncový koef. [1]
 force;Force [N];Síla [N]
 forces;Forces;Síly
 from;From [m];Od [m]
@@ -36,7 +36,9 @@ noMoments;No moments yet.;Seznam neobsahuje žádné momenty.
 oneSupport;One support;Vetknutý nosník
 position;Position [m];Poloha [m]
 precision;Precision [mm];Přesnost [mm]
-reactions;Reactions:;Reakce:
+reactionAy;Reaction Ay:;Reakce Ay:
+reactionBy;Reaction By:;Reakce By:
+reactionMA;Reaction MA:;Reakce MA:
 startCoef;Start coef. [1];Počáteční koef. [1]
 stress;Stress [MPa];Napětí [MPa]
 twoSupports;Two supports;Nosník na dvou podporách
