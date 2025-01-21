@@ -4,6 +4,9 @@ The calculation is performed at several points along the beam with a given dista
 
 The computing is done on the client side using **Blazor WebAssembly**. The UI is written using **Radzen** components.
 
+![screenshot](AppScreenshot1.png)
+![screenshot](AppScreenshot2.png)
+
 # Projects
 
 ## Application
@@ -22,7 +25,9 @@ Contains most of the components, pagas, services and other parts of the Blazor a
 
 **Plot:** Consists of the `PointTransformationService` which takes the points from the calculation result and transforms them into a collection of `PointForPlot` objects suitable for plotting.
 
-**Components:** The `Calculation.razor` component contains the UI for defining the input and displaying the output of the calculation. Both parts are separated by a wide-as-screen `Calculate` button. Some parts of it are in separate components, most notably `ModulusDialog.razor` which allows for easier definition of the modulus if it's one of the basic shapes, and `ResultChart.razor` for plotting each of the mechanical properties.
+**Pages:** This app has only one page. It's defined by the `Home.razor` file, which contains the UI for defining the input and displaying the output of the calculation. Both parts are separated by a wide-as-screen "Calculate" button.
+
+**Components:** Some parts of the page are in separate components, most notably `ModulusDialog.razor`, which allows for easier definition of the modulus if it's one of the basic shapes, and `ResultChart.razor` for plotting each of the mechanical properties.
 
 ## Test projects
 
