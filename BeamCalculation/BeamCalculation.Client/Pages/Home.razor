@@ -47,8 +47,8 @@
                             <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text=@text["calcAdd"] Click="InsertModulusFromDialog" />
                         </RadzenStack>
                         <RadzenDataGrid @ref=moduliGrid TItem="Modulus" Data=@moduli
-                                        RowCreate="OnCreateModulus" RowUpdate="OnUpdateModulus"
-                                        EmptyText=@text["noModuli"]>
+                        RowCreate="OnCreateModulus" RowUpdate="OnUpdateModulus"
+                        EmptyText=@text["noModuli"]>
                             <Columns>
                                 <RadzenDataGridColumn Property="From" Title=@text["from"] Sortable="false">
                                     <EditTemplate>
@@ -88,8 +88,8 @@
                             <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text=@text["add"] Click="InsertLoad<ForceLoad>" />
                         </RadzenStack>
                         <RadzenDataGrid @ref=forceLoadsGrid TItem="ForceLoad" Data=@forceLoads
-                                        RowCreate="OnCreateLoad" RowUpdate="OnUpdateLoad"
-                                        EmptyText=@text["noForces"]>
+                        RowCreate="OnCreateLoad" RowUpdate="OnUpdateLoad"
+                        EmptyText=@text["noForces"]>
                             <Columns>
                                 <RadzenDataGridColumn Property="Position" Title=@text["position"] Sortable="false">
                                     <EditTemplate>
@@ -125,8 +125,8 @@
                             <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text=@text["add"] Click="InsertLoad<MomentLoad>" />
                         </RadzenStack>
                         <RadzenDataGrid @ref=momentLoadsGrid TItem="MomentLoad" Data=@momentLoads
-                                        RowCreate="OnCreateLoad" RowUpdate="OnUpdateLoad"
-                                        EmptyText=@text["noMoments"]>
+                        RowCreate="OnCreateLoad" RowUpdate="OnUpdateLoad"
+                        EmptyText=@text["noMoments"]>
                             <Columns>
                                 <RadzenDataGridColumn Property="Position" Title=@text["position"] Sortable="false">
                                     <EditTemplate>
@@ -162,8 +162,8 @@
                             <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text=@text["add"] Click="InsertLoad<ContinuousLoad>" />
                         </RadzenStack>
                         <RadzenDataGrid @ref=continuousLoadsGrid TItem="ContinuousLoad" Data=@continuousLoads
-                                        RowCreate="OnCreateLoad" RowUpdate="OnUpdateLoad"
-                                        EmptyText=@text["noContinuousLoads"]>
+                        RowCreate="OnCreateLoad" RowUpdate="OnUpdateLoad"
+                        EmptyText=@text["noContinuousLoads"]>
                             <Columns>
                                 <RadzenDataGridColumn Property="Position" Title=@text["position"] Sortable="false">
                                     <EditTemplate>
@@ -229,9 +229,9 @@
                 <ResultText LabelText=@text["maxStress"] ValueText=@maxStressText />
             </RadzenColumn>
         </RadzenRow>
-        <ResultChart Data=@PointTransformationService.TransformPoints(output.Points, p => p.Force, p => p.ForceJump) CategoryAxisTitle=@text["beamM"] ValueAxisTitle=@text["force"] MinValue=@minForce MaxValue=@maxForce LineColor="Blue" />
-        <ResultChart Data=@PointTransformationService.TransformPoints(output.Points, p => p.Moment, p => p.MomentJump) CategoryAxisTitle=@text["beamM"] ValueAxisTitle=@text["moment"] MinValue=@minMoment MaxValue=@maxMoment LineColor="Green" />
-        <ResultChart Data=@PointTransformationService.TransformPoints(output.Points, p => p.Stress, p => p.StressJump) CategoryAxisTitle=@text["beamM"] ValueAxisTitle=@text["stress"] MinValue=@minStress MaxValue=@maxStress LineColor="Red" />
+        <ResultChart Data=@forcePoints CategoryAxisTitle=@text["beamM"] ValueAxisTitle=@text["force"] MinValue=@minForce MaxValue=@maxForce LineColor="Blue" />
+        <ResultChart Data=@momentPoints CategoryAxisTitle=@text["beamM"] ValueAxisTitle=@text["moment"] MinValue=@minMoment MaxValue=@maxMoment LineColor="Green" />
+        <ResultChart Data=@stressPoints CategoryAxisTitle=@text["beamM"] ValueAxisTitle=@text["stress"] MinValue=@minStress MaxValue=@maxStress LineColor="Red" />
     }
     else
     {
@@ -288,26 +288,26 @@
     {
         double modulusValue = 0;
         await DialogService.OpenAsync(text["calcAddModulus"], ds =>
-    @<RadzenStack>
-        <ModulusDialog Lang=@Lang Text=@modulusDialogText @bind-Value=modulusValue />
-        <RadzenStack Orientation="Orientation.Horizontal">
-            <RadzenButton Text=@text["cancel"] Click="ds.Close" />
-            <RadzenButton Text=@text["add"] Click="@(async () =>
-                    {
-                        if (double.IsNaN(modulusValue))
-                            await DialogService.Alert(text["modulusValid"]);
-                        else if (modulusValue <= 0)
-                            await DialogService.Alert(text["modulusPositive"]);
-                        else
-                        {
-                            Modulus modulus = new() { Value = modulusValue };
-                            await moduliGrid.InsertRow(modulus);
-                            ds.Close();
-                        }
-                    })" />
-        </RadzenStack>
-    </RadzenStack>
-    );
+            @<RadzenStack>
+                <ModulusDialog Lang=@Lang Text=@modulusDialogText @bind-Value=modulusValue />
+                <RadzenStack Orientation="Orientation.Horizontal">
+                    <RadzenButton Text=@text["cancel"] Click="ds.Close" />
+                    <RadzenButton Text=@text["add"] Click="@(async () =>
+                            {
+                                if (double.IsNaN(modulusValue))
+                                    await DialogService.Alert(text["modulusValid"]);
+                                else if (modulusValue <= 0)
+                                    await DialogService.Alert(text["modulusPositive"]);
+                                else
+                                {
+                                    Modulus modulus = new() { Value = modulusValue };
+                                    await moduliGrid.InsertRow(modulus);
+                                    ds.Close();
+                                }
+                            })" />
+                </RadzenStack>
+            </RadzenStack>
+            );
     }
 
     private async Task EditModulus(Modulus modulus)
@@ -446,12 +446,6 @@
 
     private const string emptyResultText = "-";
 
-    private Output output = new()
-        {
-            Points = [],
-            Reaction1 = new MomentLoad(),
-            Reaction2 = new ForceLoad()
-        };
     bool calculationSuccess = false;
     string errorMessage = string.Empty;
 
@@ -461,6 +455,10 @@
     private double maxMoment;
     private double minStress;
     private double maxStress;
+
+    private PointForPlot[] forcePoints;
+    private PointForPlot[] momentPoints;
+    private PointForPlot[] stressPoints;
 
     private void Calculate()
     {
@@ -490,6 +488,7 @@
         else
             throw new InvalidOperationException("Unsupported beam type");
 
+        Output output;
         try
         {
             output = CalculationService.Calculate(beam, (double)precision / 1000);
@@ -554,6 +553,10 @@
         maxForceText = Math.Round(output.MaxForce, 2).ToString() + " N";
         maxMomentText = Math.Round(output.MaxMoment, 2).ToString() + " Nm";
         maxStressText = Math.Round(output.MaxStress, 2).ToString() + " MPa";
+
+        forcePoints = PointTransformationService.TransformPoints(output.Points, p => p.Force, p => p.ForceJump);
+        momentPoints = PointTransformationService.TransformPoints(output.Points, p => p.Moment, p => p.MomentJump);
+        stressPoints = PointTransformationService.TransformPoints(output.Points, p => p.Stress, p => p.StressJump);
     }
 
     #endregion
