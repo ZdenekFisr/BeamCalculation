@@ -3,10 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeamCalculation", "BeamCalculation\BeamCalculation\BeamCalculation.csproj", "{76EF0649-D88A-4ACA-8C71-316C3A40A721}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeamCalculation.Client", "BeamCalculation\BeamCalculation.Client\BeamCalculation.Client.csproj", "{5C8B6385-E930-4EFA-A8D2-0DFF1214BBD0}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\Application.csproj", "{8B8223FF-DB99-4FCA-B703-8A0F66431441}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{7FCEDAE3-1310-49AB-8265-443F91A6AC08}"
@@ -15,20 +11,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.UnitTests", "Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.IntegrationTests", "Tests\Application.IntegrationTests\Application.IntegrationTests.csproj", "{04B9C895-8BA8-441D-830E-B28A935665D8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeamCalc", "BeamCalc\BeamCalc.csproj", "{EB802227-4056-45E8-8191-60D17355D775}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{76EF0649-D88A-4ACA-8C71-316C3A40A721}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{76EF0649-D88A-4ACA-8C71-316C3A40A721}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{76EF0649-D88A-4ACA-8C71-316C3A40A721}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{76EF0649-D88A-4ACA-8C71-316C3A40A721}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5C8B6385-E930-4EFA-A8D2-0DFF1214BBD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5C8B6385-E930-4EFA-A8D2-0DFF1214BBD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5C8B6385-E930-4EFA-A8D2-0DFF1214BBD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5C8B6385-E930-4EFA-A8D2-0DFF1214BBD0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8B8223FF-DB99-4FCA-B703-8A0F66431441}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8B8223FF-DB99-4FCA-B703-8A0F66431441}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B8223FF-DB99-4FCA-B703-8A0F66431441}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -41,6 +31,10 @@ Global
 		{04B9C895-8BA8-441D-830E-B28A935665D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{04B9C895-8BA8-441D-830E-B28A935665D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{04B9C895-8BA8-441D-830E-B28A935665D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB802227-4056-45E8-8191-60D17355D775}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB802227-4056-45E8-8191-60D17355D775}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB802227-4056-45E8-8191-60D17355D775}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB802227-4056-45E8-8191-60D17355D775}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,5 +42,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{E0E9BDE9-E6E9-40D7-8B96-9F9FE8E64C6F} = {7FCEDAE3-1310-49AB-8265-443F91A6AC08}
 		{04B9C895-8BA8-441D-830E-B28A935665D8} = {7FCEDAE3-1310-49AB-8265-443F91A6AC08}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B0B59492-ED45-49E4-92E4-9F3084A260F6}
 	EndGlobalSection
 EndGlobal

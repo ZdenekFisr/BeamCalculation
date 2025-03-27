@@ -1,0 +1,46 @@
+﻿<RadzenChart>
+    <RadzenLineSeries Data=@beam CategoryProperty="X" ValueProperty="Y" Stroke="DarkGray" StrokeWidth="5" />
+    <RadzenLineSeries Data=@Data CategoryProperty="X" ValueProperty="Y" Stroke=@LineColor />
+    <RadzenCategoryAxis>
+        <RadzenAxisTitle Text=@CategoryAxisTitle />
+        <RadzenGridLines Visible="true" />
+    </RadzenCategoryAxis>
+    <RadzenValueAxis Min=@MinValue Max=@MaxValue>
+        <RadzenAxisTitle Text=@ValueAxisTitle />
+        <RadzenGridLines Visible="true" />
+    </RadzenValueAxis>
+    <RadzenLegend Visible="false" />
+</RadzenChart>
+
+@code {
+    [Parameter]
+    public PointForPlot[]? Data { get; set; }
+
+    [Parameter]
+    public required string CategoryAxisTitle { get; set; }
+
+    [Parameter]
+    public required string ValueAxisTitle { get; set; }
+
+    [Parameter]
+    public required double MinValue { get; set; }
+
+    [Parameter]
+    public required double MaxValue { get; set; }
+
+    [Parameter]
+    public required string LineColor { get; set; }
+
+    private PointForPlot[] beam;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        beam =
+        [
+            new() { X = 0, Y = 0 },
+            new() { X = Data?.Max(p => p.X) ?? 0.0, Y = 0 }
+        ];
+    }
+}
