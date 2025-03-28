@@ -247,9 +247,6 @@
 
     protected override void OnInitialized()
     {
-        if (!Constants.SupportedLanguages.Contains(Lang))
-            NavigationManager.NavigateTo($"/{Constants.SupportedLanguages[0]}");
-
         text = LanguageService.GetLocalizedStrings($"{Constants.LocalizationFileBasePath}Home.csv", Lang ?? Constants.SupportedLanguages[0]);
         modulusDialogText = LanguageService.GetLocalizedStrings($"{Constants.LocalizationFileBasePath}ModulusDialog.csv", Lang ?? Constants.SupportedLanguages[0]);
     }
