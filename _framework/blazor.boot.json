@@ -1,10 +1,10 @@
 {
   "mainAssemblyName": "BeamCalc",
   "resources": {
-    "hash": "sha256-VXpKThCm6j1oBV4YEvSmVjxHH1elJI6nmyfVlDcLPR0=",
+    "hash": "sha256-DqO19elqOPEM45ZW8TRf6bCZu0r1ftoEh7WuIvFSSQg=",
     "fingerprinting": {
-      "Application.lf10fcl4rb.wasm": "Application.wasm",
-      "BeamCalc.oanypqcvh8.wasm": "BeamCalc.wasm",
+      "Application.hfje2ifqoy.wasm": "Application.wasm",
+      "BeamCalc.b4uuth2vxt.wasm": "BeamCalc.wasm",
       "CsvHelper.t2en4y4q4i.wasm": "CsvHelper.wasm",
       "Microsoft.AspNetCore.Components.Forms.cnfg0vpx0u.wasm": "Microsoft.AspNetCore.Components.Forms.wasm",
       "Microsoft.AspNetCore.Components.p6qyresxt9.wasm": "Microsoft.AspNetCore.Components.wasm",
@@ -86,7 +86,7 @@
       "System.Xml.XDocument.sauz905bp5.wasm": "System.Xml.XDocument.wasm",
       "System.Xml.XPath.XDocument.yrzgmxlc9l.wasm": "System.Xml.XPath.XDocument.wasm",
       "dotnet.native.89ltzsu7pq.js": "dotnet.native.js",
-      "dotnet.native.vluerm6dku.wasm": "dotnet.native.wasm",
+      "dotnet.native.6xu2gd7q1x.wasm": "dotnet.native.wasm",
       "dotnet.js": "dotnet.js",
       "dotnet.runtime.qrl1fuqt3c.js": "dotnet.runtime.js",
       "icudt_CJK.tjcz0u77k5.dat": "icudt_CJK.dat",
@@ -126,7 +126,7 @@
       "dotnet.runtime.qrl1fuqt3c.js": "sha256-ilTXrnUF4HKbIAFVIYlRmX3ryKNZpGUObkWMF0n2Kcg="
     },
     "wasmNative": {
-      "dotnet.native.vluerm6dku.wasm": "sha256-jbq3fmoGxFDvrbI2pBlvMVPFZ8aYqVWd9/pV+ECIOCQ="
+      "dotnet.native.6xu2gd7q1x.wasm": "sha256-9qK4xopmlsrvul9uGjqfn+7Y709uoxECRJH/VRP+iTA="
     },
     "icu": {
       "icudt_CJK.tjcz0u77k5.dat": "sha256-SZLtQnRc0JkwqHab0VUVP7T3uBPSeYzxzDnpxPpUnHk=",
@@ -134,8 +134,8 @@
       "icudt_no_CJK.lfu7j35m59.dat": "sha256-L7sV7NEYP37/Qr2FPCePo5cJqRgTXRwGHuwF5Q+0Nfs="
     },
     "coreAssembly": {
-      "Application.lf10fcl4rb.wasm": "sha256-QXZMA5ImYjQurV4fE0Xizcy3OtdlX2Cznii2yCi5vnY=",
-      "BeamCalc.oanypqcvh8.wasm": "sha256-cIudjwFrnMB5MvamIDGHN6UKYOhrtMtbaWrYfriuD68=",
+      "Application.hfje2ifqoy.wasm": "sha256-I2zu+ZMVX6iEAz/ZB0FaV5GpGQbZBHcheMCuY4JE01g=",
+      "BeamCalc.b4uuth2vxt.wasm": "sha256-+/TeqglUp/AKEYYqqGH3XiSZvq3Up34CTtxvB1lWXfo=",
       "CsvHelper.t2en4y4q4i.wasm": "sha256-BbM7TqLTlJASaH0gxpRVBP/thFJFq2ttJl6CVU5bs5w=",
       "Microsoft.AspNetCore.Components.Forms.cnfg0vpx0u.wasm": "sha256-OF+s3VqgYrAt6bebxG61F76ss2kylm42qWuyxCqrEag=",
       "Microsoft.AspNetCore.Components.p6qyresxt9.wasm": "sha256-EayeN/qWPCFLYSnMIp+KErwRVyzmU3v6m0v24RUlmC4=",
