@@ -1,0 +1,91 @@
+﻿@typeparam TItem where TItem : class
+
+<RadzenStack Orientation="Orientation.Vertical" Gap="10">
+    <RadzenStack Orientation="Orientation.Horizontal" Wrap="FlexWrap.Wrap" Gap="10">
+        <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text=@AddButtonText Click=@(async _ => await InsertItemAsync()) />
+    </RadzenStack>
+    <RadzenDataGrid @ref=@dataGrid TItem="TItem" Data=@Data EmptyText=@EmptyText
+                    RowUpdate=@OnUpdateItem RowCreate=@OnCreateItem
+                    AllowColumnResize="true">
+        <Columns>
+            @Columns
+            <RadzenDataGridColumn Context="item" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Frozen="true" FrozenPosition="FrozenColumnPosition.Right">
+                <Template>
+                    <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@(async _ => await EditItemAsync(item))" @onclick:stopPropagation="true" />
+                    <RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(async _ => await DeleteItemAsync(item))" @onclick:stopPropagation="true" />
+                </Template>
+                <EditTemplate>
+                    <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@(async _ => await SaveItemAsync(item))" aria-label="Save" />
+                    <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(_ => CancelEditItem(item))" aria-label="Cancel" />
+                    <RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(async _ => await DeleteItemAsync(item))" aria-label="Delete" />
+                </EditTemplate>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+</RadzenStack>
+
+@code {
+    [Parameter]
+    public required string AddButtonText { get; set; }
+
+    [Parameter]
+    public required ICollection<TItem> Data { get; set; }
+
+    [Parameter]
+    public required RenderFragment Columns { get; set; }
+
+    [Parameter]
+    public required string EmptyText { get; set; }
+
+    [Parameter]
+    public int MaxWidth { get; set; }
+
+    [Parameter]
+    public required Func<TItem> OnCreateInstanceOfItem { get; set; }
+
+    [Parameter]
+    public Action? OnOrderItems { get; set; }
+
+    private RadzenDataGrid<TItem> dataGrid;
+
+    private void OnCreateItem(TItem item)
+    {
+        Data.Add(item);
+    }
+
+    private void OnUpdateItem(TItem item)
+    {
+        Data.Remove(item);
+        Data.Add(item);
+    }
+
+    private async Task InsertItemAsync()
+    {
+        TItem item = OnCreateInstanceOfItem();
+        await dataGrid.InsertRow(item);
+    }
+
+    private async Task EditItemAsync(TItem item)
+    {
+        await dataGrid.EditRow(item);
+    }
+
+    private async Task DeleteItemAsync(TItem item)
+    {
+        Data.Remove(item);
+        await dataGrid.Reload();
+    }
+
+    private async Task SaveItemAsync(TItem item)
+    {
+        await dataGrid.UpdateRow(item);
+
+        if (OnOrderItems is not null)
+            OnOrderItems();
+    }
+
+    private void CancelEditItem(TItem item)
+    {
+        dataGrid.CancelEditRow(item);
+    }
+}

@@ -1,74 +1,96 @@
-﻿<RadzenRow>
-    <RadzenColumn Size="6">
-        <RadzenFieldset Text=@text["crossSection"]>
-            <RadzenRadioButtonList TValue="CrossSectionType" @bind-Value="CrossSectionType" Orientation="Orientation.Vertical">
-                <Items>
-                    <RadzenRadioButtonListItem Value="CrossSectionType.Square" Text=@text["square"] />
-                    <RadzenRadioButtonListItem Value="CrossSectionType.SquareStandingOnCorner" Text=@text["squareCorner"] />
-                    <RadzenRadioButtonListItem Value="CrossSectionType.HollowSquare" Text=@text["hollowSquare"] />
-                    <RadzenRadioButtonListItem Value="CrossSectionType.HollowSquareStandingOnCorner" Text=@text["hollowSquareCorner"] />
-                    <RadzenRadioButtonListItem Value="CrossSectionType.Rectangle" Text=@text["rectangle"] />
-                    <RadzenRadioButtonListItem Value="CrossSectionType.Circle" Text=@text["circle"] />
-                    <RadzenRadioButtonListItem Value="CrossSectionType.ThickPipe" Text=@text["thickPipe"] />
-                    <RadzenRadioButtonListItem Value="CrossSectionType.ThinPipe" Text=@text["thinPipe"] />
-                    <RadzenRadioButtonListItem Value="CrossSectionType.Custom" Text=@text["custom"] />
-                </Items>
-            </RadzenRadioButtonList>
-        </RadzenFieldset>
-    </RadzenColumn>
-    <RadzenColumn Size="6">
-        <RadzenFieldset Text=@text["dimensions"]>
-            <RadzenFormField Text=@dimension1Name>
-                <RadzenNumeric TValue="double" @bind-Value=dimension1 Min="0" Step="1" Change="OnDimensionChanged" />
-            </RadzenFormField>
-            @if (!string.IsNullOrEmpty(dimension2Name))
-            {
-                <RadzenFormField Text=@dimension2Name>
-                    <RadzenNumeric TValue="double" @bind-Value=dimension2 Min="0" Step="1" Change="OnDimensionChanged" />
-                </RadzenFormField>
-            }
-            <RadzenLabel Text=@($"{text["value"]} {Value} mm^3") />
-        </RadzenFieldset>
-    </RadzenColumn>
-</RadzenRow>
+﻿@inject ILanguageService LanguageService
+@inject DialogService DialogService
+
+<RadzenStack>
+    <RadzenRow>
+        <RadzenColumn Size="6">
+            <RadzenFieldset Text=@text["crossSection"]>
+                <RadzenRadioButtonList TValue="CrossSectionType" @bind-Value="CrossSectionType" Orientation="Orientation.Vertical">
+                    <Items>
+                        <RadzenRadioButtonListItem Value="CrossSectionType.Square" Text=@text["square"] />
+                        <RadzenRadioButtonListItem Value="CrossSectionType.SquareStandingOnCorner" Text=@text["squareCorner"] />
+                        <RadzenRadioButtonListItem Value="CrossSectionType.HollowSquare" Text=@text["hollowSquare"] />
+                        <RadzenRadioButtonListItem Value="CrossSectionType.HollowSquareStandingOnCorner" Text=@text["hollowSquareCorner"] />
+                        <RadzenRadioButtonListItem Value="CrossSectionType.Rectangle" Text=@text["rectangle"] />
+                        <RadzenRadioButtonListItem Value="CrossSectionType.Circle" Text=@text["circle"] />
+                        <RadzenRadioButtonListItem Value="CrossSectionType.ThickPipe" Text=@text["thickPipe"] />
+                        <RadzenRadioButtonListItem Value="CrossSectionType.ThinPipe" Text=@text["thinPipe"] />
+                        <RadzenRadioButtonListItem Value="CrossSectionType.Custom" Text=@text["custom"] />
+                    </Items>
+                </RadzenRadioButtonList>
+            </RadzenFieldset>
+        </RadzenColumn>
+        <RadzenColumn Size="6">
+            <RadzenFieldset Text=@text["params"]>
+                <RadzenStack Orientation="Orientation.Vertical" Gap="10">
+                    <RadzenFormField Text=@text["from"]>
+                        <RadzenNumeric TValue="double" @bind-Value=From Min="0" Step="0.1" />
+                    </RadzenFormField>
+                    <RadzenFormField Text=@dimension1Name>
+                        <RadzenNumeric TValue="double" @bind-Value=dimension1 Min="0" Step="1" Change="OnDimensionChanged" />
+                    </RadzenFormField>
+                    @if (!string.IsNullOrEmpty(dimension2Name))
+                    {
+                        <RadzenFormField Text=@dimension2Name>
+                            <RadzenNumeric TValue="double" @bind-Value=dimension2 Min="0" Step="1" Change="OnDimensionChanged" />
+                        </RadzenFormField>
+                    }
+                    <RadzenLabel Text=@($"{text["value"]} {Value} mm^3") />
+                </RadzenStack>
+            </RadzenFieldset>
+        </RadzenColumn>
+    </RadzenRow>
+    <RadzenStack Orientation="Orientation.Horizontal">
+        <RadzenButton Text=@text["cancel"] Click=@DialogService.Close />
+        <RadzenButton Text=@(IsCreated ? text["add"] : text["edit"]) Click=@(async () =>
+                {
+                    if (double.IsNaN(Value))
+                        await DialogService.Alert(text["modulusValid"]);
+                    else if (Value <= 0)
+                        await DialogService.Alert(text["modulusPositive"]);
+                    else
+                    {
+                        Modulus modulus = new() { From = From, Value = Value };
+                        await OnModulusAdded.InvokeAsync(modulus);
+                        DialogService.Close();
+                    }
+                }) />
+    </RadzenStack>
+</RadzenStack>
+
+
 
 @code {
     [Parameter]
     public required string Lang { get; set; }
 
     [Parameter]
-    public required Dictionary<string, string> Text { get => text; set => text = value; }
+    public bool IsCreated { get; set; }
 
     [Parameter]
-    public double Value
-    {
-        get => value;
-        set
-        {
-            if (this.value != value)
-            {
-                this.value = value;
-                ValueChanged.InvokeAsync(value);
-            }
-        }
-    }
+    public double From { get => modulusFrom; set => modulusFrom = value; }
 
     [Parameter]
-    public EventCallback<double> ValueChanged { get; set; }
+    public double Value { get => modulusValue; set => modulusValue = value; }
+
+    [Parameter]
+    public EventCallback<Modulus> OnModulusAdded { get; set; }
 
     private CrossSectionType crossSectionType = CrossSectionType.Custom;
     private string dimension1Name = string.Empty;
     private string dimension2Name = string.Empty;
     private double dimension1 = 0;
     private double dimension2 = 0;
-    private double value;
+    private double modulusFrom;
+    private double modulusValue;
 
     private Dictionary<string, string> text;
 
     protected override void OnInitialized()
     {
-        base.OnInitialized();
+        text = LanguageService.GetLocalizedStrings($"{Constants.LocalizationFileBasePath}ModulusDialog.csv", Lang ?? Constants.SupportedLanguages[0]);
         SetDimensionNames();
+        dimension1 = Value;
     }
 
     private CrossSectionType CrossSectionType

@@ -1,15 +1,21 @@
-﻿circle;Circle;Kruh
+﻿add;Add;Přidat
+cancel;Cancel;Storno
+circle;Circle;Kruh
 crossSection;Cross-section;Průřez
 custom;Custom;Vlastní
 diameter;Diameter [mm];Průměr [mm]
-dimensions;Dimensions;Rozměry
+edit;Edit;Upravit
+from;From [m];Od [m]
 height;Height [mm];Výška [mm]
 hollowSquare;Hollow square;Dutý čtverec
 hollowSquareCorner;Hollow square standing on its corner;Dutý čtverec postavený na vrcholu
 innerDiameter;Inner diameter [mm];Vnitřní průměr [mm]
 innerSide;Inner side [mm];Vnitřní hrana [mm]
+modulusPositive;Modulus must have a positive value.;Modul průřezu musí mít kladnou hodnotu.
+modulusValid;"Modulus must have a valid value. Check for ""NaN"" as result.";"Modul průřezu musí mít platnou hodnotu. Ujistěte se, že výsledkem není ""NaN""."
 outerDiameter;Outer diameter [mm];Vnější průměr [mm]
 outerSide;Outer side [mm];Vnější hrana [mm]
+params;Parameters;Parametry
 rectangle;Rectangle;Obdélník
 side;Side [mm];Hrana [mm]
 square;Square;Čtverec
